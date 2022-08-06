@@ -148,6 +148,8 @@ extension MainMenuViewController {
         if let labelRecognaizer = sender?.view as? UILabel, let textLabel = labelRecognaizer.text {
             switch textLabel {
             case MenuTitle.start.rawValue:
+                let gameSession = GameSessoin()
+                Game.shared.gameSession = gameSession
                 guard let nextVC = storyboard.instantiateViewController(withIdentifier: "GameSceneViewController") as? GameSceneViewController else { return }
                 self.animateTapAndRoute(to: nextVC, animate: self.startGameLabel)
             case MenuTitle.records.rawValue:
@@ -170,7 +172,6 @@ extension MainMenuViewController {
             animate.layer.opacity = 0.3
         }completion: { result in
                         nextVC.modalPresentationStyle = .fullScreen
-                        nextVC.view.backgroundColor = UIColor(named: ColorScheme.background.rawValue)
                         animate.layer.opacity = 1
                         self.present(nextVC, animated: true)
         }
