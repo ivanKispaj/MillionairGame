@@ -18,13 +18,17 @@ final class GameSessoin {
     let totalQuestions: Int = 15
     var answersToQuestions: Int = 0
     let numberOfHints: Hints = Hints(callToFriends: 1, hallHelp: 1, fiftyFifty: 1)
-
+    
 }
 
 extension GameSessoin: GameSceneDelegate {
     func didEndGame(withResult result: Int, rightAnswer: Int) {
-        self.totalCash = result
-        self.answersToQuestions = rightAnswer
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = DateFormatter.Style.short
+        dateFormatter.timeStyle = DateFormatter.Style.short
+        let now = dateFormatter.string(from: Date())
+        let newRecord = Records(date: now, totalCash: result, rightAnswers: rightAnswer)
+        Game.shared.records?.append(newRecord)
     }
     
     

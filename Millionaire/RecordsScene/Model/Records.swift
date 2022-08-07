@@ -8,7 +8,7 @@
 import Foundation
 
 struct Records {
-    var date: Date
+    var date: String
     var totalCash: Int
-    
+    var rightAnswers: Int
 }

@@ -14,8 +14,8 @@
             filePath = "Millionaire/Resourses/GameSession/GameSession.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "26"
-            endingLineNumber = "26"
+            startingLineNumber = "30"
+            endingLineNumber = "30"
             landmarkName = "didEndGame(withResult:rightAnswer:)"
             landmarkType = "9">
          </BreakpointContent>
