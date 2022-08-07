@@ -21,7 +21,7 @@ class MainMenuViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.addAllSubview()
-        
+        print(Game.shared.records)
     }
     
     // меняем отступ сверху для лого в зависимости от ориентации экрана

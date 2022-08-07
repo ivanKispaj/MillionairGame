@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		63550840289E9D3600AD1B70 /* SFSymbols.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6355083F289E9D3600AD1B70 /* SFSymbols.xcassets */; };
 		6359A9C2289F9BE1006A6DF5 /* ExtensionUILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6359A9C1289F9BE1006A6DF5 /* ExtensionUILabel.swift */; };
-		6359A9C528A01692006A6DF5 /* Records.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6359A9C428A01692006A6DF5 /* Records.swift */; };
+		6359A9C728A0297F006A6DF5 /* RecordsCareTaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6359A9C628A0297F006A6DF5 /* RecordsCareTaker.swift */; };
 		63690931289D8AD300224CF6 /* MenuTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63690930289D8AD300224CF6 /* MenuTitle.swift */; };
 		63690934289D8E1F00224CF6 /* RecordsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63690933289D8E1F00224CF6 /* RecordsViewController.swift */; };
 		63690938289D908D00224CF6 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63690937289D908D00224CF6 /* Game.swift */; };
@@ -31,7 +31,7 @@
 /* Begin PBXFileReference section */
 		6355083F289E9D3600AD1B70 /* SFSymbols.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = SFSymbols.xcassets; sourceTree = "<group>"; };
 		6359A9C1289F9BE1006A6DF5 /* ExtensionUILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionUILabel.swift; sourceTree = "<group>"; };
-		6359A9C428A01692006A6DF5 /* Records.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Records.swift; sourceTree = "<group>"; };
+		6359A9C628A0297F006A6DF5 /* RecordsCareTaker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsCareTaker.swift; sourceTree = "<group>"; };
 		63690930289D8AD300224CF6 /* MenuTitle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuTitle.swift; sourceTree = "<group>"; };
 		63690933289D8E1F00224CF6 /* RecordsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsViewController.swift; sourceTree = "<group>"; };
 		63690937289D908D00224CF6 /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
@@ -79,14 +79,6 @@
 			path = Helpers;
 			sourceTree = "<group>";
 		};
-		6359A9C328A01683006A6DF5 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				6359A9C428A01692006A6DF5 /* Records.swift */,
-			);
-			path = Model;
-			sourceTree = "<group>";
-		};
 		6369092F289D8ABD00224CF6 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -98,7 +90,6 @@
 		63690932289D8DFA00224CF6 /* RecordsScene */ = {
 			isa = PBXGroup;
 			children = (
-				6359A9C328A01683006A6DF5 /* Model */,
 				63690933289D8E1F00224CF6 /* RecordsViewController.swift */,
 			);
 			path = RecordsScene;
@@ -108,6 +99,7 @@
 			isa = PBXGroup;
 			children = (
 				63690937289D908D00224CF6 /* Game.swift */,
+				6359A9C628A0297F006A6DF5 /* RecordsCareTaker.swift */,
 			);
 			path = Game;
 			sourceTree = "<group>";
@@ -316,9 +308,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6359A9C528A01692006A6DF5 /* Records.swift in Sources */,
 				63690941289D984700224CF6 /* GameService.swift in Sources */,
 				63D2F542289B756C009C3EC2 /* MainMenuViewController.swift in Sources */,
+				6359A9C728A0297F006A6DF5 /* RecordsCareTaker.swift in Sources */,
 				6369093E289D960100224CF6 /* QuestionsModel.swift in Sources */,
 				63690934289D8E1F00224CF6 /* RecordsViewController.swift in Sources */,
 				63D2F563289D8187009C3EC2 /* ColorScheme.swift in Sources */,

@@ -28,7 +28,8 @@ extension GameSessoin: GameSceneDelegate {
         dateFormatter.timeStyle = DateFormatter.Style.short
         let now = dateFormatter.string(from: Date())
         let newRecord = Records(date: now, totalCash: result, rightAnswers: rightAnswer)
-        Game.shared.records.append(newRecord)
+        Game.shared.addRecords(records: newRecord)
+        Game.shared.saveRecords()
     }
     
     
