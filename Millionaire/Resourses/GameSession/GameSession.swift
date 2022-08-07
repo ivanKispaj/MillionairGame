@@ -20,3 +20,12 @@ final class GameSessoin {
     let numberOfHints: Hints = Hints(callToFriends: 1, hallHelp: 1, fiftyFifty: 1)
 
 }
+
+extension GameSessoin: GameSceneDelegate {
+    func didEndGame(withResult result: Int, rightAnswer: Int) {
+        self.totalCash = result
+        self.answersToQuestions = rightAnswer
+    }
+    
+    
+}

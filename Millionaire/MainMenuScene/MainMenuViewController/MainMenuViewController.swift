@@ -8,7 +8,7 @@
 import UIKit
 
 class MainMenuViewController: UIViewController {
-    
+ 
     weak var scrollView: UIScrollView!
     weak var imageLogo: UIImageView!
     weak var startGameLabel: UILabel!

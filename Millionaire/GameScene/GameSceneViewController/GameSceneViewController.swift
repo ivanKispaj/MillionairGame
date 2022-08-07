@@ -7,8 +7,13 @@
 
 import UIKit
 
+protocol GameSceneDelegate: AnyObject {
+    func didEndGame(withResult result: Int, rightAnswer: Int)
+}
+
 class GameSceneViewController: UIViewController {
     
+    weak var endGameDelegate: GameSceneDelegate?
     var questionHeighConstreint: NSLayoutConstraint!
     weak var questionView: UIView!
     weak var callFriends: UILabel!
@@ -43,7 +48,7 @@ class GameSceneViewController: UIViewController {
         self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(oneSeconds), userInfo: nil, repeats: true)
         self.currentLevel = 0
         setupGameScene()
-
+        endGameDelegate = Game.shared.gameSession
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -163,7 +168,6 @@ extension GameSceneViewController {
     
     fileprivate func setQuestionLabel(after midleView: UIView) -> UIView{
         
-        var heightQuestionView: CGFloat = 10
         let questionView = UIView(frame: .zero)
         questionView.backgroundColor = UIColor(named: ColorScheme.background.rawValue)?.withAlphaComponent(0.5)
         questionView.layer.masksToBounds = false
@@ -376,11 +380,13 @@ extension GameSceneViewController {
     }
 //MARK: - Timer
     @objc func oneSeconds() {
+        guard let gameSession = Game.shared.gameSession else { return }
+
         self.responseTime -= 1
         if self.responseTime <= 0 {
             self.timer.invalidate()
             self.timerActivitiIntdicator.stopAnimating()
-
+            endGameDelegate?.didEndGame(withResult: gameSession.totalCash, rightAnswer: self.currentLevel + 1)
             self.dismiss(animated: true)
         }
         self.timerActivitiLabel.text = String(responseTime)
@@ -392,7 +398,7 @@ extension GameSceneViewController {
 
         if let buttonRecognaizer = sender.view as? UIButton, let titleButton = buttonRecognaizer.title(for: .normal) {
             if question.rightAnswer == titleButton {
-                gameSession.answersToQuestions = gameSession.answersToQuestions + 1
+               // gameSession.answersToQuestions = gameSession.answersToQuestions + 1
                 gameSession.totalCash = self.questionPrice[self.currentLevel]
                 if self.currentLevel == 14 {
                     setlableAndButtontitle()
@@ -408,6 +414,15 @@ extension GameSceneViewController {
                 }
                
                 
+            } else {
+                if self.currentLevel == 0 {
+                    endGameDelegate?.didEndGame(withResult: 0, rightAnswer: 0)
+                } else {
+                    endGameDelegate?.didEndGame(withResult: self.questionPrice[self.currentLevel - 1], rightAnswer: self.currentLevel)
+
+                }
+                Game.shared.gameSession = nil
+                self.dismiss(animated: true)
             }
         }
 
