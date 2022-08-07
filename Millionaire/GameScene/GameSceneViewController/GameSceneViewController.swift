@@ -8,8 +8,9 @@
 import UIKit
 
 class GameSceneViewController: UIViewController {
-
     
+    var questionHeighConstreint: NSLayoutConstraint!
+    weak var questionView: UIView!
     weak var callFriends: UILabel!
     weak var hallHelp: UILabel!
     weak var fiftyFifty: UILabel!
@@ -19,39 +20,59 @@ class GameSceneViewController: UIViewController {
     weak var timeCounterlabel: UILabel!
     weak var questionLabel: UILabel!
     weak var answerOne: UIButton!
-    weak var answertwo: UIButton!
+    weak var answerTwo: UIButton!
     weak var answerThree: UIButton!
     weak var answerFour: UIButton!
     weak var timerActivitiIntdicator: UIActivityIndicatorView!
-    weak var responsePricve: UILabel!
+    weak var timerActivitiLabel: UILabel!
+    weak var responsePrice: UILabel!
+    var responseTime = 60
+    weak var timer: Timer!
+    var currentLevel: Int = 0 {
+        didSet {
+        
+                self.currentQuestion = allQuestions[currentLevel]
+        }
+    }
+    var currentQuestion: QuestionsModel?
+    var allQuestions = GameService.shared.getAllQuestion()
+    var questionPrice = [500,1000,2000,3000,5000,10000,15000,25000,50000,100000,200000,400000,800000,1500000,3000000]
     
-    var questions = GameService.shared.getAllQuestion()
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(oneSeconds), userInfo: nil, repeats: true)
+        self.currentLevel = 0
         setupGameScene()
-    }
 
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+  
+        self.timerActivitiIntdicator.startAnimating()
+        timer.fire()
+
+    }
     override var shouldAutorotate: Bool {
         return false
     }
-
+    
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return .portrait
     }
     
+    
+    
     fileprivate func setupGameScene() {
         
-        guard let gameSession = Game.shared.gameSession else {return}
-        
         setBackgroundImage()
-        let topView = setTopView(from: gameSession)
+        let topView = setTopView()
         let midlView = setMidleView(after: topView)
         let questionView = setQuestionLabel(after: midlView)
         
-        setAnswerView(after: questionView, for: self.questions[0])
+        setAnswerView(after: questionView)
+        setlableAndButtontitle()
     }
-   
+    
 }
 
 
@@ -59,37 +80,46 @@ class GameSceneViewController: UIViewController {
 
 extension GameSceneViewController {
     
-    fileprivate func setAnswerView(after questionView: UIView, for question: QuestionsModel ) {
- 
+    fileprivate func setAnswerView(after questionView: UIView) {
+        
         let responsePrice = UILabel(frame: .zero)
-        responsePrice.text = "Сумма выигрыша: 500"
         responsePrice.textColor = UIColor(named: "goldColor")
         responsePrice.textAlignment = .center
+        self.responsePrice = responsePrice
+        
         let answerOne = UIButton(frame: .zero)
         let answerTwo = UIButton(frame: .zero)
         let answerThree = UIButton(frame: .zero)
         let answerFour = UIButton(frame: .zero)
-        answerOne.setTitle(question.answers[0], for: .normal)
-        answerTwo.setTitle(question.answers[1], for: .normal)
-        answerThree.setTitle(question.answers[2], for: .normal)
-        answerFour.setTitle(question.answers[3], for: .normal)
+        
+
         answerOne.tintColor = .white
         answerTwo.tintColor = .white
         answerThree.tintColor = .white
         answerFour.tintColor = .white
-        
         answerOne.backgroundColor = UIColor.systemGray4.withAlphaComponent(0.7)
         answerTwo.backgroundColor = UIColor.systemGray4.withAlphaComponent(0.7)
         answerThree.backgroundColor = UIColor.systemGray4.withAlphaComponent(0.7)
         answerFour.backgroundColor = UIColor.systemGray4.withAlphaComponent(0.7)
+        answerOne.layer.cornerRadius = 10
+        answerTwo.layer.cornerRadius = 10
+        answerThree.layer.cornerRadius = 10
+        answerFour.layer.cornerRadius = 10
+        
+        let tapAnswerOne = UITapGestureRecognizer(target: self, action: #selector(tapAnswer))
+        let tapAnswerTwo = UITapGestureRecognizer(target: self, action: #selector(tapAnswer))
+        let tapAnswerThree = UITapGestureRecognizer(target: self, action: #selector(tapAnswer))
+        let tapAnswerFour = UITapGestureRecognizer(target: self, action: #selector(tapAnswer))
 
+        answerOne.addGestureRecognizer(tapAnswerOne)
+        answerTwo.addGestureRecognizer(tapAnswerTwo)
+        answerThree.addGestureRecognizer(tapAnswerThree)
+        answerFour.addGestureRecognizer(tapAnswerFour)
+        
         self.answerOne = answerOne
-        self.answertwo = answerThree
+        self.answerTwo = answerTwo
         self.answerThree = answerThree
         self.answerFour = answerFour
-        
-        
-        
         
         self.view.addSubview(answerOne)
         self.view.addSubview(answerTwo)
@@ -132,6 +162,7 @@ extension GameSceneViewController {
     
     
     fileprivate func setQuestionLabel(after midleView: UIView) -> UIView{
+        
         var heightQuestionView: CGFloat = 10
         let questionView = UIView(frame: .zero)
         questionView.backgroundColor = UIColor(named: ColorScheme.background.rawValue)?.withAlphaComponent(0.5)
@@ -146,31 +177,27 @@ extension GameSceneViewController {
         questionLabel.font = UIFont.boldSystemFont(ofSize: 18)
         questionLabel.textAlignment = .left
         questionLabel.numberOfLines = 0
-        questionLabel.text = self.questions[8].question
         questionView.addSubview(questionLabel)
-        
         self.view.addSubview(questionView)
         questionLabel.translatesAutoresizingMaskIntoConstraints = false
         questionView.translatesAutoresizingMaskIntoConstraints = false
-        
-        if let height = questionLabel.getHeightLabel() {
-            heightQuestionView = height
-        }
+        self.questionLabel = questionLabel
+
+
+        self.questionHeighConstreint = questionView.heightAnchor.constraint(equalToConstant: 10)
+        self.questionView = questionView
         NSLayoutConstraint.activate([
             questionView.topAnchor.constraint(equalTo: midleView.bottomAnchor, constant: 30),
-            questionView.heightAnchor.constraint(equalToConstant: heightQuestionView),
             questionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 10),
             self.view.trailingAnchor.constraint(equalTo: questionView.trailingAnchor, constant: 10),
-            
             questionLabel.topAnchor.constraint(equalTo: questionView.topAnchor, constant: 10),
             questionLabel.leadingAnchor.constraint(equalTo: questionView.leadingAnchor, constant: 0),
             questionView.trailingAnchor.constraint(equalTo: questionLabel.trailingAnchor, constant: 0),
             questionView.bottomAnchor.constraint(equalTo: questionLabel.bottomAnchor, constant: 10)
         ])
-        timerActivitiIntdicator.startAnimating()
         return questionView
     }
-
+    
     fileprivate func setMidleView(after topView: UIView) -> UIView {
         let midleView = UIView(frame: .zero)
         midleView.backgroundColor = .clear
@@ -197,7 +224,7 @@ extension GameSceneViewController {
             homeButton.centerYAnchor.constraint(equalTo: midleView.centerYAnchor),
             homeButton.heightAnchor.constraint(equalToConstant: 40),
             homeButton.widthAnchor.constraint(equalTo: homeButton.heightAnchor, multiplier:  23 / 18)
-        
+            
         ])
         let timerActiviti = UIActivityIndicatorView(frame: .zero)
         timerActiviti.color = .red
@@ -206,22 +233,19 @@ extension GameSceneViewController {
         let timeLabel = UILabel(frame: .zero)
         timeLabel.textColor = UIColor(named: ColorScheme.menuLabelColor.rawValue)
         timeLabel.font = UIFont.boldSystemFont(ofSize: 17)
-        timeLabel.text = "60"
         timeLabel.backgroundColor = .clear
         timeLabel.transform = CGAffineTransform(scaleX: 0.4, y: 0.4)
         timeLabel.isHidden = false
         timerActiviti.addSubview(timeLabel)
         self.timerActivitiIntdicator = timerActiviti
-
+        self.timerActivitiLabel = timeLabel
         midleView.addSubview(self.timerActivitiIntdicator)
         timerActiviti.translatesAutoresizingMaskIntoConstraints = false
         timeLabel.translatesAutoresizingMaskIntoConstraints = false
-      
-//timerActiviti.startAnimating()
+        
         NSLayoutConstraint.activate([
             self.timerActivitiIntdicator.centerYAnchor.constraint(equalTo: midleView.centerYAnchor),
             self.timerActivitiIntdicator.centerXAnchor.constraint(equalTo: midleView.centerXAnchor),
-            self.timerActivitiIntdicator.widthAnchor.constraint(equalToConstant: 100),
             self.timerActivitiIntdicator.heightAnchor.constraint(equalTo: self.timerActivitiIntdicator.widthAnchor, multiplier: 1 / 1),
             timeLabel.centerXAnchor.constraint(equalTo: self.timerActivitiIntdicator.centerXAnchor),
             timeLabel.centerYAnchor.constraint(equalTo: self.timerActivitiIntdicator.centerYAnchor)
@@ -230,11 +254,11 @@ extension GameSceneViewController {
         return midleView
     }
     
-    fileprivate func setTopView(from gameSession: GameSessoin) -> UIView {
+    fileprivate func setTopView() -> UIView {
         let topView = UIView(frame: .zero)
         topView.backgroundColor = UIColor(named: ColorScheme.background.rawValue)
-    
- // Hints (Подсказки)
+        
+        // Hints (Подсказки)
         let callFriendsImage = UIImageView(frame: .zero)
         let hallHelpImage = UIImageView(frame: .zero)
         let fiftyFiftyImage = UIImageView(frame: .zero)
@@ -246,35 +270,31 @@ extension GameSceneViewController {
         self.fiftyFifty = fiftyFifty
         self.callFriends = callFriends
         fiftyFifty.font = UIFont.systemFont(ofSize: 12)
-        fiftyFifty.text = String(gameSession.numberOfHints.fiftyFifty)
         fiftyFifty.textColor = .red
         
         hallHelp.font = UIFont.systemFont(ofSize: 12)
-        hallHelp.text = String(gameSession.numberOfHints.hallHelp)
         hallHelp.textColor = .red
         
         
         callFriends.font = UIFont.systemFont(ofSize: 12)
-        callFriends.text = String(gameSession.numberOfHints.callToFriends)
         callFriends.textColor = .red
         
         callFriendsImage.addSubview(callFriends)
         hallHelpImage.addSubview(hallHelp)
         fiftyFiftyImage.addSubview(fiftyFifty)
         
- // картинки подсказок
+        // картинки подсказок
         hallHelpImage.image = UIImage(systemName: "person.3.fill")
         callFriendsImage.image = UIImage(systemName: "phone.and.waveform.fill")
         fiftyFiftyImage.image = UIImage(named: "fiftyFifty")
         
- // TotalCash (Заработанные деньги)
+        // TotalCash (Заработанные деньги)
         let totalCashImage = UIImageView(frame: .zero)
         let totalCashLabel = UILabel(frame: .zero)
         totalCashImage.image = UIImage(named: "Money")
-        totalCashLabel.text = String(gameSession.totalCash)
         totalCashLabel.textColor = UIColor(named: ColorScheme.menuLabelColor.rawValue)
         totalCashLabel.font = UIFont.systemFont(ofSize: 12)
-        
+        self.totalCash = totalCashLabel
         topView.translatesAutoresizingMaskIntoConstraints = false
         callFriendsImage.translatesAutoresizingMaskIntoConstraints = false
         hallHelpImage.translatesAutoresizingMaskIntoConstraints = false
@@ -291,8 +311,8 @@ extension GameSceneViewController {
         topView.addSubview(callFriendsImage)
         topView.addSubview(fiftyFiftyImage)
         topView.addSubview(hallHelpImage)
-
-// констрейнты для верхнего бара (topView)
+        
+        // констрейнты для верхнего бара (topView)
         NSLayoutConstraint.activate([
             self.view.leadingAnchor.constraint(equalTo: topView.leadingAnchor),
             topView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
@@ -310,7 +330,7 @@ extension GameSceneViewController {
             hallHelpImage.centerYAnchor.constraint(equalTo: topView.centerYAnchor),
             hallHelpImage.leadingAnchor.constraint(greaterThanOrEqualTo: totalCashLabel.trailingAnchor, constant: 10),
             totalCashImage.widthAnchor.constraint(equalToConstant: 30),
-            totalCashLabel.widthAnchor.constraint(equalToConstant: 40),
+            totalCashLabel.widthAnchor.constraint(equalToConstant: 100),
             callFriendsImage.widthAnchor.constraint(equalToConstant: 30),
             hallHelpImage.widthAnchor.constraint(equalToConstant: 50),
             fiftyFiftyImage.widthAnchor.constraint(equalToConstant: 50),
@@ -349,9 +369,70 @@ extension GameSceneViewController {
         ])
     }
     
-    //MARK: - Exit Home Screen
+//MARK: - Exit Home Screen
     
     @objc func exitHomeScreen() {
         self.dismiss(animated: true)
+    }
+//MARK: - Timer
+    @objc func oneSeconds() {
+        self.responseTime -= 1
+        if self.responseTime <= 0 {
+            self.timer.invalidate()
+            self.timerActivitiIntdicator.stopAnimating()
+
+            self.dismiss(animated: true)
+        }
+        self.timerActivitiLabel.text = String(responseTime)
+    }
+// MARK: - Обработка надатия на ответ
+    @objc func tapAnswer(_ sender: UITapGestureRecognizer) {
+        guard let question = self.currentQuestion else { return }
+        guard let gameSession = Game.shared.gameSession else {return}
+
+        if let buttonRecognaizer = sender.view as? UIButton, let titleButton = buttonRecognaizer.title(for: .normal) {
+            if question.rightAnswer == titleButton {
+                gameSession.answersToQuestions = gameSession.answersToQuestions + 1
+                gameSession.totalCash = self.questionPrice[self.currentLevel]
+                if self.currentLevel == 14 {
+                    setlableAndButtontitle()
+                    self.responseTime = 60
+                    self.timer.invalidate()
+                    self.timerActivitiIntdicator.stopAnimating()
+                    
+                }else {
+                    self.currentLevel = self.currentLevel + 1
+
+                    setlableAndButtontitle()
+                    self.responseTime = 60
+                }
+               
+                
+            }
+        }
+
+    }
+    
+    fileprivate func setlableAndButtontitle() {
+        guard let question = self.currentQuestion else {return}
+        guard let gameSession = Game.shared.gameSession else {return}
+
+        responsePrice.text = "Баллов за ответ:  \(String(self.questionPrice[self.currentLevel]))"
+
+        self.answerOne.setTitle(question.answers[0], for: .normal)
+        self.answerTwo.setTitle(question.answers[1], for: .normal)
+        self.answerThree.setTitle(question.answers[2], for: .normal)
+        self.answerFour.setTitle(question.answers[3], for: .normal)
+        self.questionLabel.text = question.question
+        self.timerActivitiLabel.text = String(responseTime)
+        self.fiftyFifty.text = String(gameSession.numberOfHints.fiftyFifty)
+        self.hallHelp.text = String(gameSession.numberOfHints.hallHelp)
+        self.callFriends.text = String(gameSession.numberOfHints.callToFriends)
+        self.totalCash.text = String(gameSession.totalCash)
+        if let height = questionLabel.getHeightLabel() {
+            self.questionView.layoutIfNeeded()
+            self.questionHeighConstreint.constant = height
+
+        }
     }
 }
