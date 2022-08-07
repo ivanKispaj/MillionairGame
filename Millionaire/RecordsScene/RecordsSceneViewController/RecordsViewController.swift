@@ -28,7 +28,10 @@ class RecordsSceneViewController: UIViewController, UITableViewDelegate, UITable
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let records = self.records else { return 0 }
+        guard let records = self.records else {
+            return 0
+            
+        }
         return records.count
     }
     
@@ -78,7 +81,8 @@ extension RecordsSceneViewController {
             backButton.heightAnchor.constraint(equalToConstant: 30),
             backButton.widthAnchor.constraint(equalTo: backButton.heightAnchor, multiplier: 12 / 9),
             self.titleTable.centerYAnchor.constraint(equalTo: topView.centerYAnchor),
-            self.titleTable.centerXAnchor.constraint(equalTo: topView.centerXAnchor),30),
+            self.titleTable.centerXAnchor.constraint(equalTo: topView.centerXAnchor),
+            self.myTableView.topAnchor.constraint(equalTo: topView.bottomAnchor),
             self.myTableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
             self.myTableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
             self.myTableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor)
