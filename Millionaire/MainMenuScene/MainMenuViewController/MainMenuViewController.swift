@@ -29,6 +29,9 @@ class MainMenuViewController: UIViewController {
         getNewTopAnchor()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        print(Game.shared.records)
+    }
     fileprivate func addAllSubview() {
         
         self.view.backgroundColor = UIColor(named: ColorScheme.background.rawValue)
