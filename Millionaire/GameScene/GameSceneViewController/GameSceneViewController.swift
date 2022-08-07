@@ -18,37 +18,38 @@ class GameSceneViewController: UIViewController {
     weak var logoImage: UIImageView!
     weak var timeCounterlabel: UILabel!
     weak var questionLabel: UILabel!
-    weak var answerOne: UILabel!
-    weak var answertwo: UILabel!
-    weak var answerThree: UILabel!
-    weak var answerFour: UILabel!
-    weak var timerLabel: UILabel!
+    weak var answerOne: UIButton!
+    weak var answertwo: UIButton!
+    weak var answerThree: UIButton!
+    weak var answerFour: UIButton!
+    weak var timerActivitiIntdicator: UIActivityIndicatorView!
+    weak var responsePricve: UILabel!
     
+    var questions = GameService.shared.getAllQuestion()
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupGameScene()
     }
 
+    override var shouldAutorotate: Bool {
+        return false
+    }
+
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .portrait
+    }
+    
     fileprivate func setupGameScene() {
         
         guard let gameSession = Game.shared.gameSession else {return}
         
         setBackgroundImage()
         let topView = setTopView(from: gameSession)
-        setMidleView(topView: topView)
+        let midlView = setMidleView(after: topView)
+        let questionView = setQuestionLabel(after: midlView)
         
-       
-        let questionLabel = UILabel(frame: .zero)
-        let answerView = UIView(frame: .zero)
-        
-       
-      
-        
-
-        
-        
-        
+        setAnswerView(after: questionView, for: self.questions[0])
     }
    
 }
@@ -58,8 +59,119 @@ class GameSceneViewController: UIViewController {
 
 extension GameSceneViewController {
     
+    fileprivate func setAnswerView(after questionView: UIView, for question: QuestionsModel ) {
+ 
+        let responsePrice = UILabel(frame: .zero)
+        responsePrice.text = "Сумма выигрыша: 500"
+        responsePrice.textColor = UIColor(named: "goldColor")
+        responsePrice.textAlignment = .center
+        let answerOne = UIButton(frame: .zero)
+        let answerTwo = UIButton(frame: .zero)
+        let answerThree = UIButton(frame: .zero)
+        let answerFour = UIButton(frame: .zero)
+        answerOne.setTitle(question.answers[0], for: .normal)
+        answerTwo.setTitle(question.answers[1], for: .normal)
+        answerThree.setTitle(question.answers[2], for: .normal)
+        answerFour.setTitle(question.answers[3], for: .normal)
+        answerOne.tintColor = .white
+        answerTwo.tintColor = .white
+        answerThree.tintColor = .white
+        answerFour.tintColor = .white
+        
+        answerOne.backgroundColor = UIColor.systemGray4.withAlphaComponent(0.7)
+        answerTwo.backgroundColor = UIColor.systemGray4.withAlphaComponent(0.7)
+        answerThree.backgroundColor = UIColor.systemGray4.withAlphaComponent(0.7)
+        answerFour.backgroundColor = UIColor.systemGray4.withAlphaComponent(0.7)
 
-    fileprivate func setMidleView(topView: UIView) {
+        self.answerOne = answerOne
+        self.answertwo = answerThree
+        self.answerThree = answerThree
+        self.answerFour = answerFour
+        
+        
+        
+        
+        self.view.addSubview(answerOne)
+        self.view.addSubview(answerTwo)
+        self.view.addSubview(answerThree)
+        self.view.addSubview(answerFour)
+        self.view.addSubview(responsePrice)
+        
+        answerOne.translatesAutoresizingMaskIntoConstraints = false
+        answerTwo.translatesAutoresizingMaskIntoConstraints = false
+        answerThree.translatesAutoresizingMaskIntoConstraints = false
+        answerFour.translatesAutoresizingMaskIntoConstraints = false
+        responsePrice.translatesAutoresizingMaskIntoConstraints = false
+        let answerWidht = UIScreen.main.bounds.width - 40
+        
+        NSLayoutConstraint.activate([
+            answerOne.heightAnchor.constraint(equalToConstant: 50),
+            answerTwo.heightAnchor.constraint(equalToConstant: 50),
+            answerThree.heightAnchor.constraint(equalToConstant: 50),
+            answerFour.heightAnchor.constraint(equalToConstant: 50),
+            responsePrice.topAnchor.constraint(equalTo: questionView.bottomAnchor, constant: 20),
+            responsePrice.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            
+            answerOne.topAnchor.constraint(equalTo: responsePrice.bottomAnchor, constant: 50),
+            self.view.bottomAnchor.constraint(greaterThanOrEqualTo: answerFour.bottomAnchor, constant: 20),
+            answerOne.widthAnchor.constraint(equalToConstant: answerWidht),
+            answerTwo.widthAnchor.constraint(equalToConstant: answerWidht),
+            answerThree.widthAnchor.constraint(equalToConstant: answerWidht),
+            answerFour.widthAnchor.constraint(equalToConstant: answerWidht),
+            answerOne.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            answerTwo.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            answerThree.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            answerFour.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            answerTwo.topAnchor.constraint(equalTo: answerOne.bottomAnchor, constant: 20),
+            answerThree.topAnchor.constraint(equalTo: answerTwo.bottomAnchor, constant: 20),
+            answerFour.topAnchor.constraint(equalTo: answerThree.bottomAnchor, constant: 20),
+            
+        ])
+        
+    }
+    
+    
+    fileprivate func setQuestionLabel(after midleView: UIView) -> UIView{
+        var heightQuestionView: CGFloat = 10
+        let questionView = UIView(frame: .zero)
+        questionView.backgroundColor = UIColor(named: ColorScheme.background.rawValue)?.withAlphaComponent(0.5)
+        questionView.layer.masksToBounds = false
+        questionView.layer.shadowColor = UIColor.systemGray6.cgColor
+        questionView.layer.shadowOpacity = 0.7
+        questionView.layer.shadowOffset = CGSize(width: 0, height: 10)
+        questionView.layer.shadowRadius = 6
+        
+        let questionLabel = UILabel(frame: .zero)
+        questionLabel.textColor = .white
+        questionLabel.font = UIFont.boldSystemFont(ofSize: 18)
+        questionLabel.textAlignment = .left
+        questionLabel.numberOfLines = 0
+        questionLabel.text = self.questions[8].question
+        questionView.addSubview(questionLabel)
+        
+        self.view.addSubview(questionView)
+        questionLabel.translatesAutoresizingMaskIntoConstraints = false
+        questionView.translatesAutoresizingMaskIntoConstraints = false
+        
+        if let height = questionLabel.getHeightLabel() {
+            heightQuestionView = height
+        }
+        NSLayoutConstraint.activate([
+            questionView.topAnchor.constraint(equalTo: midleView.bottomAnchor, constant: 30),
+            questionView.heightAnchor.constraint(equalToConstant: heightQuestionView),
+            questionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 10),
+            self.view.trailingAnchor.constraint(equalTo: questionView.trailingAnchor, constant: 10),
+            
+            questionLabel.topAnchor.constraint(equalTo: questionView.topAnchor, constant: 10),
+            questionLabel.leadingAnchor.constraint(equalTo: questionView.leadingAnchor, constant: 0),
+            questionView.trailingAnchor.constraint(equalTo: questionLabel.trailingAnchor, constant: 0),
+            questionView.bottomAnchor.constraint(equalTo: questionLabel.bottomAnchor, constant: 10)
+        ])
+        timerActivitiIntdicator.startAnimating()
+        return questionView
+    }
+
+    fileprivate func setMidleView(after topView: UIView) -> UIView {
         let midleView = UIView(frame: .zero)
         midleView.backgroundColor = .clear
         self.view.addSubview(midleView)
@@ -97,23 +209,25 @@ extension GameSceneViewController {
         timeLabel.text = "60"
         timeLabel.backgroundColor = .clear
         timeLabel.transform = CGAffineTransform(scaleX: 0.4, y: 0.4)
-        self.timerLabel = timeLabel
-        timerActiviti.addSubview(self.timerLabel)
-        midleView.addSubview(timerActiviti)
+        timeLabel.isHidden = false
+        timerActiviti.addSubview(timeLabel)
+        self.timerActivitiIntdicator = timerActiviti
+
+        midleView.addSubview(self.timerActivitiIntdicator)
         timerActiviti.translatesAutoresizingMaskIntoConstraints = false
-        self.timerLabel.translatesAutoresizingMaskIntoConstraints = false
+        timeLabel.translatesAutoresizingMaskIntoConstraints = false
       
 //timerActiviti.startAnimating()
         NSLayoutConstraint.activate([
-            timerActiviti.centerYAnchor.constraint(equalTo: midleView.centerYAnchor),
-            timerActiviti.centerXAnchor.constraint(equalTo: midleView.centerXAnchor),
-            timerActiviti.widthAnchor.constraint(equalToConstant: 100),
-            timerActiviti.heightAnchor.constraint(equalTo: timerActiviti.widthAnchor, multiplier: 1 / 1),
-            timeLabel.centerXAnchor.constraint(equalTo: timerActiviti.centerXAnchor),
-            timeLabel.centerYAnchor.constraint(equalTo: timerActiviti.centerYAnchor)
+            self.timerActivitiIntdicator.centerYAnchor.constraint(equalTo: midleView.centerYAnchor),
+            self.timerActivitiIntdicator.centerXAnchor.constraint(equalTo: midleView.centerXAnchor),
+            self.timerActivitiIntdicator.widthAnchor.constraint(equalToConstant: 100),
+            self.timerActivitiIntdicator.heightAnchor.constraint(equalTo: self.timerActivitiIntdicator.widthAnchor, multiplier: 1 / 1),
+            timeLabel.centerXAnchor.constraint(equalTo: self.timerActivitiIntdicator.centerXAnchor),
+            timeLabel.centerYAnchor.constraint(equalTo: self.timerActivitiIntdicator.centerYAnchor)
         ])
         
-        
+        return midleView
     }
     
     fileprivate func setTopView(from gameSession: GameSessoin) -> UIView {
