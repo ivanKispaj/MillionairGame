@@ -156,7 +156,7 @@ extension MainMenuViewController {
                 guard let nextVC = storyboard.instantiateViewController(withIdentifier: "GameSceneViewController") as? GameSceneViewController else { return }
                 self.animateTapAndRoute(to: nextVC, animate: self.startGameLabel)
             case MenuTitle.records.rawValue:
-                guard let nextVC = storyboard.instantiateViewController(withIdentifier: "RecordsViewController") as? RecordsViewController else { return }
+                guard let nextVC = storyboard.instantiateViewController(withIdentifier: "RecordsViewController") as? RecordsSceneViewController else { return }
                 self.animateTapAndRoute(to: nextVC, animate: self.recordsLabel)
                 
             case MenuTitle.settings.rawValue:

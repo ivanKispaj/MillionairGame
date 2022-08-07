@@ -38,10 +38,10 @@
             </objects>
             <point key="canvasLocation" x="1129" y="-232"/>
         </scene>
-        <!--Records View Controller-->
+        <!--Records Scene View Controller-->
         <scene sceneID="cN8-Cm-YnB">
             <objects>
-                <viewController storyboardIdentifier="RecordsViewController" id="xzF-3X-pcb" customClass="RecordsViewController" customModule="Millionaire" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="RecordsViewController" id="xzF-3X-pcb" customClass="RecordsSceneViewController" customModule="Millionaire" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Qty-xx-vWU">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

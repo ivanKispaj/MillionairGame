@@ -10,4 +10,6 @@ import Foundation
 enum ColorScheme: String {
     case background = "backgroundColor"
     case menuLabelColor = "menuLableCollor"
+    case goldColor = "goldColor"
+    case tabBarColor = "tabBarColor"
 }
