@@ -400,10 +400,11 @@ extension GameSceneViewController {
             if question.rightAnswer == titleButton {
                 gameSession.totalCash = self.questionPrice[self.currentLevel]
                 if self.currentLevel == 14 {
-                    setlableAndButtontitle()
+                   
                     self.responseTime = 60
                     self.timer.invalidate()
                     self.timerActivitiIntdicator.stopAnimating()
+                    setlableAndButtontitle()
                     
                 }else {
                     if let description = question.description {
@@ -413,9 +414,9 @@ extension GameSceneViewController {
                             self.timerActivitiIntdicator.startAnimating()
                             
                             self.currentLevel = self.currentLevel + 1
-                            
-                            self.setlableAndButtontitle()
                             self.responseTime = 60
+                            self.setlableAndButtontitle()
+                           
                         }
                         alert.addAction(action)
                         self.present(alert, animated: true)
@@ -448,7 +449,7 @@ extension GameSceneViewController {
                     }
                     
                     alert.addAction(action)
-                    self.present(alert, animated: true)  
+                    self.present(alert, animated: true)
                 } else {
                     Game.shared.gameSession = nil
                     self.dismiss(animated: true)
