@@ -35,8 +35,8 @@ class GameSceneViewController: UIViewController {
     weak var timer: Timer!
     var currentLevel: Int = 0 {
         didSet {
-        
-                self.currentQuestion = allQuestions[currentLevel]
+            
+            self.currentQuestion = allQuestions[currentLevel]
         }
     }
     var currentQuestion: QuestionsModel?
@@ -52,10 +52,10 @@ class GameSceneViewController: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-  
+        
         self.timerActivitiIntdicator.startAnimating()
         timer.fire()
-
+        
     }
     override var shouldAutorotate: Bool {
         return false
@@ -97,7 +97,7 @@ extension GameSceneViewController {
         let answerThree = UIButton(frame: .zero)
         let answerFour = UIButton(frame: .zero)
         
-
+        
         answerOne.tintColor = .white
         answerTwo.tintColor = .white
         answerThree.tintColor = .white
@@ -115,7 +115,7 @@ extension GameSceneViewController {
         let tapAnswerTwo = UITapGestureRecognizer(target: self, action: #selector(tapAnswer))
         let tapAnswerThree = UITapGestureRecognizer(target: self, action: #selector(tapAnswer))
         let tapAnswerFour = UITapGestureRecognizer(target: self, action: #selector(tapAnswer))
-
+        
         answerOne.addGestureRecognizer(tapAnswerOne)
         answerTwo.addGestureRecognizer(tapAnswerTwo)
         answerThree.addGestureRecognizer(tapAnswerThree)
@@ -186,8 +186,8 @@ extension GameSceneViewController {
         questionLabel.translatesAutoresizingMaskIntoConstraints = false
         questionView.translatesAutoresizingMaskIntoConstraints = false
         self.questionLabel = questionLabel
-
-
+        
+        
         self.questionHeighConstreint = questionView.heightAnchor.constraint(equalToConstant: 10)
         self.questionView = questionView
         NSLayoutConstraint.activate([
@@ -373,15 +373,15 @@ extension GameSceneViewController {
         ])
     }
     
-//MARK: - Exit Home Screen
+    //MARK: - Exit Home Screen
     
     @objc func exitHomeScreen() {
         self.dismiss(animated: true)
     }
-//MARK: - Timer
+    //MARK: - Timer
     @objc func oneSeconds() {
         guard let gameSession = Game.shared.gameSession else { return }
-
+        
         self.responseTime -= 1
         if self.responseTime <= 0 {
             self.timer.invalidate()
@@ -391,14 +391,13 @@ extension GameSceneViewController {
         }
         self.timerActivitiLabel.text = String(responseTime)
     }
-// MARK: - Обработка надатия на ответ
+    // MARK: - Обработка надатия на ответ
     @objc func tapAnswer(_ sender: UITapGestureRecognizer) {
         guard let question = self.currentQuestion else { return }
         guard let gameSession = Game.shared.gameSession else {return}
-
+        
         if let buttonRecognaizer = sender.view as? UIButton, let titleButton = buttonRecognaizer.title(for: .normal) {
             if question.rightAnswer == titleButton {
-               // gameSession.answersToQuestions = gameSession.answersToQuestions + 1
                 gameSession.totalCash = self.questionPrice[self.currentLevel]
                 if self.currentLevel == 14 {
                     setlableAndButtontitle()
@@ -407,33 +406,66 @@ extension GameSceneViewController {
                     self.timerActivitiIntdicator.stopAnimating()
                     
                 }else {
-                    self.currentLevel = self.currentLevel + 1
-
-                    setlableAndButtontitle()
-                    self.responseTime = 60
+                    if let description = question.description {
+                        self.timerActivitiIntdicator.stopAnimating()
+                        let alert = UIAlertController(title: "Поздравляем! Верный ответ.", message: description, preferredStyle: .alert)
+                        let action = UIAlertAction(title: "Ok", style: .default) { action in
+                            self.timerActivitiIntdicator.startAnimating()
+                            
+                            self.currentLevel = self.currentLevel + 1
+                            
+                            self.setlableAndButtontitle()
+                            self.responseTime = 60
+                        }
+                        alert.addAction(action)
+                        self.present(alert, animated: true)
+                        
+                        
+                    } else {
+                        self.currentLevel = self.currentLevel + 1
+                        setlableAndButtontitle()
+                        self.responseTime = 60
+                    }
+                    
                 }
-               
+                
                 
             } else {
                 if self.currentLevel == 0 {
                     endGameDelegate?.didEndGame(withResult: 0, rightAnswer: 0)
                 } else {
                     endGameDelegate?.didEndGame(withResult: self.questionPrice[self.currentLevel - 1], rightAnswer: self.currentLevel)
-
+                    
                 }
-                Game.shared.gameSession = nil
-                self.dismiss(animated: true)
+                if let description = question.description {
+                    self.timerActivitiIntdicator.stopAnimating()
+                    self.timer = nil
+                    
+                    let alert = UIAlertController(title: "Не верный ответ!", message: description, preferredStyle: .alert)
+                    let action = UIAlertAction(title: "Ok", style: .default) { _ in
+                        Game.shared.gameSession = nil
+                        self.dismiss(animated: true)
+                    }
+                    
+                    alert.addAction(action)
+                    self.present(alert, animated: true)  
+                } else {
+                    Game.shared.gameSession = nil
+                    self.dismiss(animated: true)
+                }
+                
+                
             }
         }
-
+        
     }
     
     fileprivate func setlableAndButtontitle() {
         guard let question = self.currentQuestion else {return}
         guard let gameSession = Game.shared.gameSession else {return}
-
+        
         responsePrice.text = "Баллов за ответ:  \(String(self.questionPrice[self.currentLevel]))"
-
+        
         self.answerOne.setTitle(question.answers[0], for: .normal)
         self.answerTwo.setTitle(question.answers[1], for: .normal)
         self.answerThree.setTitle(question.answers[2], for: .normal)
@@ -447,7 +479,18 @@ extension GameSceneViewController {
         if let height = questionLabel.getHeightLabel() {
             self.questionView.layoutIfNeeded()
             self.questionHeighConstreint.constant = height
-
+            
         }
     }
+    
+    fileprivate func getAlert(withTitle title: String, message: String, actionTitle: String) -> UIAlertController {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let action = UIAlertAction(title: actionTitle, style: .default) { action in
+            self.timerActivitiIntdicator.startAnimating()
+        }
+        alert.addAction(action)
+        return alert
+    }
 }
+
+
