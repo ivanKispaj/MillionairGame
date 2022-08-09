@@ -12,4 +12,6 @@ enum ColorScheme: String {
     case menuLabelColor = "menuLableCollor"
     case goldColor = "goldColor"
     case tabBarColor = "tabBarColor"
+    case setingsBackground = "settingsBackground"
+    case settingsTint = "settingsColorTitle"
 }

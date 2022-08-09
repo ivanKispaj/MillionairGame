@@ -7,8 +7,13 @@
 
 import UIKit
 
+protocol MainMenuDelegate: AnyObject {
+    func togglMenu()
+}
+
 class MainMenuViewController: UIViewController {
- 
+    
+    weak var containerDelegate: MainMenuDelegate?
     weak var scrollView: UIScrollView!
     weak var imageLogo: UIImageView!
     weak var startGameLabel: UILabel!
@@ -17,7 +22,7 @@ class MainMenuViewController: UIViewController {
     let imageLogoTopMargine: CGFloat = 120
     // для изменения отступа сверху у логотипа при изменении ориентации экрана
     weak var imageLogoTopConstraint: NSLayoutConstraint!
-    
+ 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.addAllSubview()
@@ -159,7 +164,7 @@ extension MainMenuViewController {
                 self.animateTapAndRoute(to: nextVC, animate: self.recordsLabel)
                 
             case MenuTitle.settings.rawValue:
-                print(textLabel)
+                self.containerDelegate?.togglMenu()
             default:
                 break
             }
