@@ -376,6 +376,9 @@ extension GameSceneViewController {
     //MARK: - Exit Home Screen
     
     @objc func exitHomeScreen() {
+        self.timer.invalidate()
+        self.timer = nil
+        Game.shared.gameSession = nil
         self.dismiss(animated: true)
     }
     //MARK: - Timer
@@ -397,39 +400,44 @@ extension GameSceneViewController {
         guard let gameSession = Game.shared.gameSession else {return}
         
         if let buttonRecognaizer = sender.view as? UIButton, let titleButton = buttonRecognaizer.title(for: .normal) {
+            
             if question.rightAnswer == titleButton {
                 gameSession.totalCash = self.questionPrice[self.currentLevel]
-                if self.currentLevel == 14 {
-                   
-                    self.responseTime = 60
-                    self.timer.invalidate()
+                self.currentLevel = self.currentLevel + 1
+                
+                if let description = question.description {
                     self.timerActivitiIntdicator.stopAnimating()
-                    setlableAndButtontitle()
-                    
-                }else {
-                    if let description = question.description {
-                        self.timerActivitiIntdicator.stopAnimating()
-                        let alert = UIAlertController(title: "Поздравляем! Верный ответ.", message: description, preferredStyle: .alert)
-                        let action = UIAlertAction(title: "Ok", style: .default) { action in
-                            self.timerActivitiIntdicator.startAnimating()
-                            
-                            self.currentLevel = self.currentLevel + 1
+                    let alert = UIAlertController(title: "Поздравляем! Верный ответ.", message: description, preferredStyle: .alert)
+                    let action = UIAlertAction(title: "Ok", style: .default) { action in
+                        self.timerActivitiIntdicator.startAnimating()
+                        if self.currentLevel <= 14 {
                             self.responseTime = 60
                             self.setlableAndButtontitle()
-                           
+                        } else {
+                            self.timerActivitiIntdicator.stopAnimating()
+                            self.endGameDelegate?.didEndGame(withResult: self.questionPrice[self.currentLevel - 1], rightAnswer: self.currentLevel)
+
+                            let alertEndGame = UIAlertController(title: "Поздравляем!", message: "Вы выиграли, и ответили на все вопросы! Попробуйте еще раз.", preferredStyle: .alert)
+                            let actionOk = UIAlertAction(title: "Ok", style: .default) { _ in
+                                self.currentLevel = self.currentLevel - 1
+                                self.timer = nil
+                                Game.shared.gameSession = nil
+                                self.dismiss(animated: true)
+                            }
+                            alertEndGame.addAction(actionOk)
+                            self.present(alertEndGame, animated: true)
                         }
-                        alert.addAction(action)
-                        self.present(alert, animated: true)
-                        
-                        
-                    } else {
-                        self.currentLevel = self.currentLevel + 1
+                    }
+                    
+                    alert.addAction(action)
+                    self.present(alert, animated: true)
+                    
+                } else {
+                    if self.currentLevel <= 14 {
                         setlableAndButtontitle()
                         self.responseTime = 60
                     }
-                    
                 }
-                
                 
             } else {
                 if self.currentLevel == 0 {
