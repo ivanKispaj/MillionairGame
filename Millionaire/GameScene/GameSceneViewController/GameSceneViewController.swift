@@ -57,6 +57,8 @@ class GameSceneViewController: UIViewController {
         timer.fire()
         
     }
+    
+    // Отключаем автоповорот экрана
     override var shouldAutorotate: Bool {
         return false
     }
@@ -73,7 +75,6 @@ class GameSceneViewController: UIViewController {
         let topView = setTopView()
         let midlView = setMidleView(after: topView)
         let questionView = setQuestionLabel(after: midlView)
-        
         setAnswerView(after: questionView)
         setlableAndButtontitle()
     }
@@ -92,34 +93,10 @@ extension GameSceneViewController {
         responsePrice.textAlignment = .center
         self.responsePrice = responsePrice
         
-        let answerOne = UIButton(frame: .zero)
-        let answerTwo = UIButton(frame: .zero)
-        let answerThree = UIButton(frame: .zero)
-        let answerFour = UIButton(frame: .zero)
-        
-        
-        answerOne.tintColor = .white
-        answerTwo.tintColor = .white
-        answerThree.tintColor = .white
-        answerFour.tintColor = .white
-        answerOne.backgroundColor = UIColor.systemGray4.withAlphaComponent(0.7)
-        answerTwo.backgroundColor = UIColor.systemGray4.withAlphaComponent(0.7)
-        answerThree.backgroundColor = UIColor.systemGray4.withAlphaComponent(0.7)
-        answerFour.backgroundColor = UIColor.systemGray4.withAlphaComponent(0.7)
-        answerOne.layer.cornerRadius = 10
-        answerTwo.layer.cornerRadius = 10
-        answerThree.layer.cornerRadius = 10
-        answerFour.layer.cornerRadius = 10
-        
-        let tapAnswerOne = UITapGestureRecognizer(target: self, action: #selector(tapAnswer))
-        let tapAnswerTwo = UITapGestureRecognizer(target: self, action: #selector(tapAnswer))
-        let tapAnswerThree = UITapGestureRecognizer(target: self, action: #selector(tapAnswer))
-        let tapAnswerFour = UITapGestureRecognizer(target: self, action: #selector(tapAnswer))
-        
-        answerOne.addGestureRecognizer(tapAnswerOne)
-        answerTwo.addGestureRecognizer(tapAnswerTwo)
-        answerThree.addGestureRecognizer(tapAnswerThree)
-        answerFour.addGestureRecognizer(tapAnswerFour)
+        let answerOne = getButton()
+        let answerTwo = getButton()
+        let answerThree = getButton()
+        let answerFour = getButton()
         
         self.answerOne = answerOne
         self.answerTwo = answerTwo
@@ -132,10 +109,6 @@ extension GameSceneViewController {
         self.view.addSubview(answerFour)
         self.view.addSubview(responsePrice)
         
-        answerOne.translatesAutoresizingMaskIntoConstraints = false
-        answerTwo.translatesAutoresizingMaskIntoConstraints = false
-        answerThree.translatesAutoresizingMaskIntoConstraints = false
-        answerFour.translatesAutoresizingMaskIntoConstraints = false
         responsePrice.translatesAutoresizingMaskIntoConstraints = false
         let answerWidht = UIScreen.main.bounds.width - 40
         
@@ -166,6 +139,7 @@ extension GameSceneViewController {
     }
     
     
+    
     fileprivate func setQuestionLabel(after midleView: UIView) -> UIView{
         
         let questionView = UIView(frame: .zero)
@@ -185,11 +159,11 @@ extension GameSceneViewController {
         self.view.addSubview(questionView)
         questionLabel.translatesAutoresizingMaskIntoConstraints = false
         questionView.translatesAutoresizingMaskIntoConstraints = false
-        self.questionLabel = questionLabel
-        
         
         self.questionHeighConstreint = questionView.heightAnchor.constraint(equalToConstant: 10)
+        self.questionLabel = questionLabel
         self.questionView = questionView
+        
         NSLayoutConstraint.activate([
             questionView.topAnchor.constraint(equalTo: midleView.bottomAnchor, constant: 30),
             questionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 10),
@@ -201,6 +175,7 @@ extension GameSceneViewController {
         ])
         return questionView
     }
+    
     
     fileprivate func setMidleView(after topView: UIView) -> UIView {
         let midleView = UIView(frame: .zero)
@@ -299,6 +274,7 @@ extension GameSceneViewController {
         totalCashLabel.textColor = UIColor(named: ColorScheme.menuLabelColor.rawValue)
         totalCashLabel.font = UIFont.systemFont(ofSize: 12)
         self.totalCash = totalCashLabel
+        
         topView.translatesAutoresizingMaskIntoConstraints = false
         callFriendsImage.translatesAutoresizingMaskIntoConstraints = false
         hallHelpImage.translatesAutoresizingMaskIntoConstraints = false
@@ -373,6 +349,19 @@ extension GameSceneViewController {
         ])
     }
     
+    //MARK: - Create UIbutton for Answer
+    fileprivate     func getButton() -> UIButton {
+        let button = UIButton(frame: .zero)
+        button.tintColor = UIColor(named: ColorScheme.buttonAnswer.rawValue)
+        button.backgroundColor = UIColor(named: ColorScheme.buttonAnswerBackground.rawValue)?.withAlphaComponent(0.7)
+        button.layer.cornerRadius = 10
+        button.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(tapAnswer))
+        button.addGestureRecognizer(tap)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }
+    
     //MARK: - Exit Home Screen
     
     @objc func exitHomeScreen() {
@@ -381,6 +370,7 @@ extension GameSceneViewController {
         Game.shared.gameSession = nil
         self.dismiss(animated: true)
     }
+    
     //MARK: - Timer
     @objc func oneSeconds() {
         guard let gameSession = Game.shared.gameSession else { return }
@@ -394,7 +384,8 @@ extension GameSceneViewController {
         }
         self.timerActivitiLabel.text = String(responseTime)
     }
-    // MARK: - Обработка надатия на ответ
+    
+    // MARK: - Обработка нажатия на ответ
     @objc func tapAnswer(_ sender: UITapGestureRecognizer) {
         guard let question = self.currentQuestion else { return }
         guard let gameSession = Game.shared.gameSession else {return}
@@ -416,7 +407,7 @@ extension GameSceneViewController {
                         } else {
                             self.timerActivitiIntdicator.stopAnimating()
                             self.endGameDelegate?.didEndGame(withResult: self.questionPrice[self.currentLevel - 1], rightAnswer: self.currentLevel)
-
+                            
                             let alertEndGame = UIAlertController(title: "Поздравляем!", message: "Вы выиграли, и ответили на все вопросы! Попробуйте еще раз.", preferredStyle: .alert)
                             let actionOk = UIAlertAction(title: "Ok", style: .default) { _ in
                                 self.currentLevel = self.currentLevel - 1
