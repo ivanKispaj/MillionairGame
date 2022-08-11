@@ -7,12 +7,18 @@
 
 import UIKit
 
+
 protocol MainMenuDelegate: AnyObject {
     func togglMenu()
 }
 
+protocol SettingsDifficultyDelegate: AnyObject {
+    func setDifficulty(withLevel level: Int)
+}
+
 class MainMenuViewController: UIViewController {
-    
+   
+    var difficultyLevel: DifficultyLevel?
     weak var containerDelegate: MainMenuDelegate?
     weak var scrollView: UIScrollView!
     weak var imageLogo: UIImageView!
@@ -182,5 +188,24 @@ extension MainMenuViewController {
                         animate.layer.opacity = 1
                         self.present(nextVC, animated: true)
         }
+    }
+}
+
+
+extension MainMenuViewController: SettingsDifficultyDelegate {
+  
+    
+    func setDifficulty(withLevel level: Int) {
+        switch level {
+        case 0:
+            self.difficultyLevel = DifficultyLevel.easy
+        case 1:
+            self.difficultyLevel = DifficultyLevel.middle
+        case 2:
+            self.difficultyLevel = DifficultyLevel.hard
+        default:
+            self.difficultyLevel = nil
+        }
+        print(self.difficultyLevel)
     }
 }
