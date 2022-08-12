@@ -8,6 +8,8 @@
 import Foundation
 
 
-enum DifficultyLevel {
-    case easy, middle, hard
+enum DifficultyLevel: String {
+    case easy = "легко"
+    case middle = "средне"
+    case hard = "сложно"
 }

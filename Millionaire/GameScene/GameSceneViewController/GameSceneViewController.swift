@@ -32,14 +32,17 @@ class GameSceneViewController: UIViewController {
     weak var timerActivitiLabel: UILabel!
     weak var responsePrice: UILabel!
     var responseTime = 60
-    weak var timer: Timer!
+    var timer: Timer!
     var currentLevel: Int = 0 {
         didSet {
-            
+            if allQuestions.count == self.currentLevel {
+                return 
+            }
             self.currentQuestion = allQuestions[currentLevel]
         }
     }
-    var currentQuestion: QuestionsModel?
+    weak var questionNumber: UILabel!
+    weak var currentQuestion: QuestionsModel?
     var allQuestions = GameService.shared.getAllQuestion()
     var questionPrice = [500,1000,2000,3000,5000,10000,15000,25000,50000,100000,200000,400000,800000,1500000,3000000]
     var difficultyLevel: DifficultyLevel = .easy
@@ -51,24 +54,32 @@ class GameSceneViewController: UIViewController {
             return MiddleStrategies()
         case .hard:
             return HardStrategies()
-        
+            
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.responseTime = difficultyStrategies.setTimesToQuestion()
-        self.allQuestions = difficultyStrategies.setOrderOfQuestions(from: self.allQuestions)
-        self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(oneSeconds), userInfo: nil, repeats: true)
-        self.currentLevel = 0
-        setupGameScene()
         endGameDelegate = Game.shared.gameSession
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.responseTime = difficultyStrategies.setTimesToQuestion()
+        self.allQuestions = difficultyStrategies.setOrderOfQuestions(from: self.allQuestions)
+        self.currentLevel = 0
+        setupGameScene()
         
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        
+        
+        self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(oneSeconds), userInfo: nil, repeats: true)
         self.timerActivitiIntdicator.startAnimating()
         timer.fire()
+        
         
     }
     
@@ -87,7 +98,7 @@ class GameSceneViewController: UIViewController {
         
         setBackgroundImage()
         let topView = setTopView()
-        let midlView = setMidleView(after: topView)
+        let midlView = setMiddleView(after: topView)
         let questionView = setQuestionLabel(after: midlView)
         setAnswerView(after: questionView)
         setlableAndButtontitle()
@@ -99,8 +110,14 @@ class GameSceneViewController: UIViewController {
 // MARK: - setupGameScene
 
 extension GameSceneViewController {
-    
+    //MARK: - answer view
     fileprivate func setAnswerView(after questionView: UIView) {
+        let difficult = UILabel(frame: .zero)
+        difficult.text = "Сложность - \(difficultyLevel.rawValue)"
+        difficult.font = UIFont.boldSystemFont(ofSize: 12)
+        difficult.textColor = .red
+        difficult.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(difficult)
         
         let responsePrice = UILabel(frame: .zero)
         responsePrice.textColor = UIColor(named: "goldColor")
@@ -131,7 +148,10 @@ extension GameSceneViewController {
             answerTwo.heightAnchor.constraint(equalToConstant: 50),
             answerThree.heightAnchor.constraint(equalToConstant: 50),
             answerFour.heightAnchor.constraint(equalToConstant: 50),
-            responsePrice.topAnchor.constraint(equalTo: questionView.bottomAnchor, constant: 20),
+            difficult.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            difficult.topAnchor.constraint(equalTo: questionView.bottomAnchor, constant: 20),
+            
+            responsePrice.topAnchor.constraint(equalTo: difficult.bottomAnchor, constant: 10),
             responsePrice.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
             
             answerOne.topAnchor.constraint(equalTo: responsePrice.bottomAnchor, constant: 50),
@@ -152,9 +172,15 @@ extension GameSceneViewController {
         
     }
     
-    
+    //MARK: - Questions label
     
     fileprivate func setQuestionLabel(after midleView: UIView) -> UIView{
+        let questionNumber = UILabel(frame: .zero)
+        questionNumber.textColor = UIColor(named: ColorScheme.buttonAnswer.rawValue)
+        questionNumber.font = UIFont.boldSystemFont(ofSize: 20)
+        questionNumber.textAlignment = .center
+        self.view.addSubview(questionNumber)
+        self.questionNumber = questionNumber
         
         let questionView = UIView(frame: .zero)
         questionView.backgroundColor = UIColor(named: ColorScheme.background.rawValue)?.withAlphaComponent(0.5)
@@ -173,13 +199,16 @@ extension GameSceneViewController {
         self.view.addSubview(questionView)
         questionLabel.translatesAutoresizingMaskIntoConstraints = false
         questionView.translatesAutoresizingMaskIntoConstraints = false
+        questionNumber.translatesAutoresizingMaskIntoConstraints = false
         
         self.questionHeighConstreint = questionView.heightAnchor.constraint(equalToConstant: 10)
         self.questionLabel = questionLabel
         self.questionView = questionView
         
         NSLayoutConstraint.activate([
-            questionView.topAnchor.constraint(equalTo: midleView.bottomAnchor, constant: 30),
+            questionNumber.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            questionNumber.topAnchor.constraint(equalTo: midleView.bottomAnchor, constant: 20),
+            questionView.topAnchor.constraint(equalTo: questionNumber.bottomAnchor, constant: 10),
             questionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 10),
             self.view.trailingAnchor.constraint(equalTo: questionView.trailingAnchor, constant: 10),
             questionLabel.topAnchor.constraint(equalTo: questionView.topAnchor, constant: 10),
@@ -191,7 +220,8 @@ extension GameSceneViewController {
     }
     
     
-    fileprivate func setMidleView(after topView: UIView) -> UIView {
+    //MARK: - Middle view (home button and game timer)
+    fileprivate func setMiddleView(after topView: UIView) -> UIView {
         let midleView = UIView(frame: .zero)
         midleView.backgroundColor = .clear
         self.view.addSubview(midleView)
@@ -247,6 +277,7 @@ extension GameSceneViewController {
         return midleView
     }
     
+    //MARK: - top view ( total cash and hints)
     fileprivate func setTopView() -> UIView {
         let topView = UIView(frame: .zero)
         topView.backgroundColor = UIColor(named: ColorScheme.background.rawValue)
@@ -348,6 +379,7 @@ extension GameSceneViewController {
         return topView
     }
     
+    //MARK: - background image
     fileprivate func setBackgroundImage() {
         self.view.backgroundColor = UIColor(named: ColorScheme.background.rawValue)
         let backgroundImage = UIImageView(frame: .zero)
@@ -389,7 +421,10 @@ extension GameSceneViewController {
     @objc func oneSeconds() {
         guard let gameSession = Game.shared.gameSession else { return }
         
-        self.responseTime -= 1
+        self.responseTime = self.responseTime - 1
+        if self.timer == nil {
+            print("Fack")
+        }
         if self.responseTime <= 0 {
             self.timer.invalidate()
             self.timerActivitiIntdicator.stopAnimating()
@@ -424,11 +459,13 @@ extension GameSceneViewController {
                             
                             let alertEndGame = UIAlertController(title: "Поздравляем!", message: "Вы выиграли, и ответили на все вопросы! Попробуйте еще раз.", preferredStyle: .alert)
                             let actionOk = UIAlertAction(title: "Ok", style: .default) { _ in
-                                self.currentLevel = self.currentLevel - 1
+                                
+                                self.timer.invalidate()
                                 self.timer = nil
                                 Game.shared.gameSession = nil
                                 self.dismiss(animated: true)
                             }
+                            
                             alertEndGame.addAction(actionOk)
                             self.present(alertEndGame, animated: true)
                         }
@@ -474,6 +511,7 @@ extension GameSceneViewController {
         
     }
     
+    //MARK: - set label and button text
     fileprivate func setlableAndButtontitle() {
         guard let question = self.currentQuestion else {return}
         guard let gameSession = Game.shared.gameSession else {return}
@@ -490,6 +528,9 @@ extension GameSceneViewController {
         self.hallHelp.text = String(gameSession.numberOfHints.hallHelp)
         self.callFriends.text = String(gameSession.numberOfHints.callToFriends)
         self.totalCash.text = String(gameSession.totalCash)
+        
+        questionNumber.text = "Вопрос: \(String(self.currentLevel + 1))"
+        
         if let height = questionLabel.getHeightLabel() {
             self.questionView.layoutIfNeeded()
             self.questionHeighConstreint.constant = height
@@ -497,14 +538,6 @@ extension GameSceneViewController {
         }
     }
     
-    fileprivate func getAlert(withTitle title: String, message: String, actionTitle: String) -> UIAlertController {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let action = UIAlertAction(title: actionTitle, style: .default) { action in
-            self.timerActivitiIntdicator.startAnimating()
-        }
-        alert.addAction(action)
-        return alert
-    }
 }
 
 
