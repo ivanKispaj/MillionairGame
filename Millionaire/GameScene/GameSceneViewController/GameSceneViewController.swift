@@ -11,10 +11,11 @@ protocol GameSceneDelegate: AnyObject {
     func didEndGame(withResult result: Int, rightAnswer: Int)
 }
 
-class GameSceneViewController: UIViewController {
+class GameSceneViewController: UIViewController, UIScrollViewDelegate {
     
     weak var endGameDelegate: GameSceneDelegate?
     var questionHeighConstreint: NSLayoutConstraint!
+    weak var scrollView: UIScrollView!
     weak var questionView: UIView!
     weak var callFriends: UILabel!
     weak var hallHelp: UILabel!
@@ -31,7 +32,8 @@ class GameSceneViewController: UIViewController {
     weak var timerActivitiIntdicator: UIActivityIndicatorView!
     weak var timerActivitiLabel: UILabel!
     weak var responsePrice: UILabel!
-    var responseTime = 60
+    var gameTime: Int = 0
+    var countdown = 0
     var timer: Timer!
     var currentLevel: Int = 0 {
         didSet {
@@ -46,36 +48,25 @@ class GameSceneViewController: UIViewController {
     var allQuestions = GameService.shared.getAllQuestion()
     var questionPrice = [500,1000,2000,3000,5000,10000,15000,25000,50000,100000,200000,400000,800000,1500000,3000000]
     var difficultyLevel: DifficultyLevel = .easy
-    var difficultyStrategies: CreateDifficultyStratigies {
-        switch difficultyLevel {
-        case .easy:
-            return EasyStrategies()
-        case .middle:
-            return MiddleStrategies()
-        case .hard:
-            return HardStrategies()
-            
-        }
-    }
+    
+    private var difficultyFacade: DifficultyGameFacade?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         endGameDelegate = Game.shared.gameSession
+        self.difficultyFacade = DifficultyGameFacade(difficulty: self.difficultyLevel)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.responseTime = difficultyStrategies.setTimesToQuestion()
-        self.allQuestions = difficultyStrategies.setOrderOfQuestions(from: self.allQuestions)
         self.currentLevel = 0
+        difficultyFacade?.setLevelDifficulty(fromGameScene: self)
         setupGameScene()
         
     }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        
-        
         self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(oneSeconds), userInfo: nil, repeats: true)
         self.timerActivitiIntdicator.startAnimating()
         timer.fire()
@@ -117,7 +108,7 @@ extension GameSceneViewController {
         difficult.font = UIFont.boldSystemFont(ofSize: 12)
         difficult.textColor = .red
         difficult.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(difficult)
+        self.scrollView.addSubview(difficult)
         
         let responsePrice = UILabel(frame: .zero)
         responsePrice.textColor = UIColor(named: "goldColor")
@@ -134,11 +125,11 @@ extension GameSceneViewController {
         self.answerThree = answerThree
         self.answerFour = answerFour
         
-        self.view.addSubview(answerOne)
-        self.view.addSubview(answerTwo)
-        self.view.addSubview(answerThree)
-        self.view.addSubview(answerFour)
-        self.view.addSubview(responsePrice)
+        self.scrollView.addSubview(answerOne)
+        self.scrollView.addSubview(answerTwo)
+        self.scrollView.addSubview(answerThree)
+        self.scrollView.addSubview(answerFour)
+        self.scrollView.addSubview(responsePrice)
         
         responsePrice.translatesAutoresizingMaskIntoConstraints = false
         let answerWidht = UIScreen.main.bounds.width - 40
@@ -148,22 +139,20 @@ extension GameSceneViewController {
             answerTwo.heightAnchor.constraint(equalToConstant: 50),
             answerThree.heightAnchor.constraint(equalToConstant: 50),
             answerFour.heightAnchor.constraint(equalToConstant: 50),
-            difficult.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            difficult.centerXAnchor.constraint(equalTo: self.scrollView.centerXAnchor),
             difficult.topAnchor.constraint(equalTo: questionView.bottomAnchor, constant: 20),
-            
             responsePrice.topAnchor.constraint(equalTo: difficult.bottomAnchor, constant: 10),
-            responsePrice.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            
+            responsePrice.centerXAnchor.constraint(equalTo: self.scrollView.centerXAnchor),
             answerOne.topAnchor.constraint(equalTo: responsePrice.bottomAnchor, constant: 50),
-            self.view.bottomAnchor.constraint(greaterThanOrEqualTo: answerFour.bottomAnchor, constant: 20),
+            self.scrollView.bottomAnchor.constraint(greaterThanOrEqualTo: answerFour.bottomAnchor, constant: 20),
             answerOne.widthAnchor.constraint(equalToConstant: answerWidht),
             answerTwo.widthAnchor.constraint(equalToConstant: answerWidht),
             answerThree.widthAnchor.constraint(equalToConstant: answerWidht),
             answerFour.widthAnchor.constraint(equalToConstant: answerWidht),
-            answerOne.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            answerTwo.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            answerThree.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            answerFour.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            answerOne.centerXAnchor.constraint(equalTo: self.scrollView.centerXAnchor),
+            answerTwo.centerXAnchor.constraint(equalTo: self.scrollView.centerXAnchor),
+            answerThree.centerXAnchor.constraint(equalTo: self.scrollView.centerXAnchor),
+            answerFour.centerXAnchor.constraint(equalTo: self.scrollView.centerXAnchor),
             answerTwo.topAnchor.constraint(equalTo: answerOne.bottomAnchor, constant: 20),
             answerThree.topAnchor.constraint(equalTo: answerTwo.bottomAnchor, constant: 20),
             answerFour.topAnchor.constraint(equalTo: answerThree.bottomAnchor, constant: 20),
@@ -179,7 +168,7 @@ extension GameSceneViewController {
         questionNumber.textColor = UIColor(named: ColorScheme.buttonAnswer.rawValue)
         questionNumber.font = UIFont.boldSystemFont(ofSize: 20)
         questionNumber.textAlignment = .center
-        self.view.addSubview(questionNumber)
+        self.scrollView.addSubview(questionNumber)
         self.questionNumber = questionNumber
         
         let questionView = UIView(frame: .zero)
@@ -189,14 +178,14 @@ extension GameSceneViewController {
         questionView.layer.shadowOpacity = 0.7
         questionView.layer.shadowOffset = CGSize(width: 0, height: 10)
         questionView.layer.shadowRadius = 6
-        
+        self.scrollView.addSubview(questionView)
+
         let questionLabel = UILabel(frame: .zero)
         questionLabel.textColor = .white
         questionLabel.font = UIFont.boldSystemFont(ofSize: 18)
         questionLabel.textAlignment = .left
         questionLabel.numberOfLines = 0
         questionView.addSubview(questionLabel)
-        self.view.addSubview(questionView)
         questionLabel.translatesAutoresizingMaskIntoConstraints = false
         questionView.translatesAutoresizingMaskIntoConstraints = false
         questionNumber.translatesAutoresizingMaskIntoConstraints = false
@@ -206,11 +195,12 @@ extension GameSceneViewController {
         self.questionView = questionView
         
         NSLayoutConstraint.activate([
-            questionNumber.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            questionNumber.centerXAnchor.constraint(equalTo: self.scrollView.centerXAnchor),
             questionNumber.topAnchor.constraint(equalTo: midleView.bottomAnchor, constant: 20),
+            questionView.widthAnchor.constraint(equalToConstant: self.view.frame.maxX - 20),
             questionView.topAnchor.constraint(equalTo: questionNumber.bottomAnchor, constant: 10),
-            questionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 10),
-            self.view.trailingAnchor.constraint(equalTo: questionView.trailingAnchor, constant: 10),
+            questionView.leadingAnchor.constraint(equalTo: self.scrollView.leadingAnchor, constant: 10),
+            self.scrollView.trailingAnchor.constraint(equalTo: questionView.trailingAnchor, constant: 10),
             questionLabel.topAnchor.constraint(equalTo: questionView.topAnchor, constant: 10),
             questionLabel.leadingAnchor.constraint(equalTo: questionView.leadingAnchor, constant: 0),
             questionView.trailingAnchor.constraint(equalTo: questionLabel.trailingAnchor, constant: 0),
@@ -224,13 +214,13 @@ extension GameSceneViewController {
     fileprivate func setMiddleView(after topView: UIView) -> UIView {
         let midleView = UIView(frame: .zero)
         midleView.backgroundColor = .clear
-        self.view.addSubview(midleView)
+        self.scrollView.addSubview(midleView)
         midleView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             midleView.topAnchor.constraint(equalTo: topView.bottomAnchor, constant: 5),
-            midleView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            midleView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+            midleView.leadingAnchor.constraint(equalTo: self.scrollView.leadingAnchor),
+            midleView.trailingAnchor.constraint(equalTo: self.scrollView.trailingAnchor),
             midleView.heightAnchor.constraint(equalToConstant: 100)
         ])
         
@@ -249,6 +239,7 @@ extension GameSceneViewController {
             homeButton.widthAnchor.constraint(equalTo: homeButton.heightAnchor, multiplier:  23 / 18)
             
         ])
+        
         let timerActiviti = UIActivityIndicatorView(frame: .zero)
         timerActiviti.color = .red
         timerActiviti.transform = CGAffineTransform(scaleX: 4, y: 4)
@@ -330,7 +321,7 @@ extension GameSceneViewController {
         fiftyFifty.translatesAutoresizingMaskIntoConstraints = false
         callFriends.translatesAutoresizingMaskIntoConstraints = false
         
-        self.view.addSubview(topView)
+        self.scrollView.addSubview(topView)
         topView.addSubview(totalCashImage)
         topView.addSubview(totalCashLabel)
         topView.addSubview(callFriendsImage)
@@ -339,9 +330,9 @@ extension GameSceneViewController {
         
         // констрейнты для верхнего бара (topView)
         NSLayoutConstraint.activate([
-            self.view.leadingAnchor.constraint(equalTo: topView.leadingAnchor),
-            topView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-            topView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
+            self.scrollView.leadingAnchor.constraint(equalTo: topView.leadingAnchor),
+            topView.trailingAnchor.constraint(equalTo: self.scrollView.trailingAnchor),
+            topView.topAnchor.constraint(equalTo: self.scrollView.topAnchor),
             topView.heightAnchor.constraint(equalToConstant: 50),
             totalCashImage.leadingAnchor.constraint(equalTo: topView.leadingAnchor, constant: 10),
             totalCashImage.centerYAnchor.constraint(equalTo: topView.centerYAnchor),
@@ -393,6 +384,22 @@ extension GameSceneViewController {
             backgroundImage.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width),
             backgroundImage.heightAnchor.constraint(equalTo: backgroundImage.widthAnchor, multiplier: 9 / 16)
         ])
+        
+        let scrollView = UIScrollView(frame: .zero)
+        scrollView.backgroundColor = .clear
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(scrollView)
+        scrollView.contentMode = .center
+        self.scrollView = scrollView
+        self.scrollView.showsHorizontalScrollIndicator = false
+        self.scrollView.frame = self.view.safeAreaLayoutGuide.layoutFrame
+        NSLayoutConstraint.activate([
+            self.scrollView.widthAnchor.constraint(equalTo: self.view.widthAnchor),
+            self.scrollView.topAnchor.constraint(equalTo: self.view.topAnchor),
+            self.scrollView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            self.scrollView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+            self.scrollView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+        ])
     }
     
     //MARK: - Create UIbutton for Answer
@@ -421,17 +428,15 @@ extension GameSceneViewController {
     @objc func oneSeconds() {
         guard let gameSession = Game.shared.gameSession else { return }
         
-        self.responseTime = self.responseTime - 1
-        if self.timer == nil {
-            print("Fack")
-        }
-        if self.responseTime <= 0 {
+        self.countdown = self.countdown - 1
+   
+        if self.countdown <= 0 {
             self.timer.invalidate()
             self.timerActivitiIntdicator.stopAnimating()
             endGameDelegate?.didEndGame(withResult: gameSession.totalCash, rightAnswer: self.currentLevel + 1)
             self.dismiss(animated: true)
         }
-        self.timerActivitiLabel.text = String(responseTime)
+        self.timerActivitiLabel.text = String(countdown)
     }
     
     // MARK: - Обработка нажатия на ответ
@@ -451,7 +456,7 @@ extension GameSceneViewController {
                     let action = UIAlertAction(title: "Ok", style: .default) { action in
                         self.timerActivitiIntdicator.startAnimating()
                         if self.currentLevel <= 14 {
-                            self.responseTime = self.difficultyStrategies.setTimesToQuestion()
+                            self.countdown = self.gameTime
                             self.setlableAndButtontitle()
                         } else {
                             self.timerActivitiIntdicator.stopAnimating()
@@ -477,7 +482,7 @@ extension GameSceneViewController {
                 } else {
                     if self.currentLevel <= 14 {
                         setlableAndButtontitle()
-                        self.responseTime = difficultyStrategies.setTimesToQuestion()
+                        self.countdown = self.gameTime
                     }
                 }
                 
@@ -523,7 +528,7 @@ extension GameSceneViewController {
         self.answerThree.setTitle(question.answers[2], for: .normal)
         self.answerFour.setTitle(question.answers[3], for: .normal)
         self.questionLabel.text = question.question
-        self.timerActivitiLabel.text = String(responseTime)
+        self.timerActivitiLabel.text = String(countdown)
         self.fiftyFifty.text = String(gameSession.numberOfHints.fiftyFifty)
         self.hallHelp.text = String(gameSession.numberOfHints.hallHelp)
         self.callFriends.text = String(gameSession.numberOfHints.callToFriends)

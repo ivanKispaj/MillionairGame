@@ -8,53 +8,48 @@
 import Foundation
 
 protocol CreateDifficultyStratigies {
-    func setTimesToQuestion() -> Int
-    func setOrderOfQuestions(from questions: [QuestionsModel]) -> [QuestionsModel]
+    func setGameSceneDifficultyProperty(fromGameScene scene: GameSceneViewController)
 }
 
 final class EasyStrategies: CreateDifficultyStratigies {
-    func setTimesToQuestion() -> Int {
-        return 60
+    func setGameSceneDifficultyProperty(fromGameScene scene: GameSceneViewController) {
+        let newQuestions = scene.allQuestions.sorted(by: { $0.difficultyLevel < $1.difficultyLevel })
+        scene.allQuestions = newQuestions
+        scene.countdown = 60
+        scene.gameTime = 60
     }
-    
-    func setOrderOfQuestions(from questions: [QuestionsModel]) -> [QuestionsModel] {
-        return questions.sorted(by: { $0.difficultyLevel < $1.difficultyLevel })
-    }
+
     
     
 }
 
 final class MiddleStrategies: CreateDifficultyStratigies {
-    func setTimesToQuestion() -> Int {
-        return 40
-    }
-    
-    func setOrderOfQuestions(from questions: [QuestionsModel]) -> [QuestionsModel] {
-        var newQuestions = questions.sorted(by: { $0.difficultyLevel < $1.difficultyLevel })
-        
+ 
+    func setGameSceneDifficultyProperty(fromGameScene scene: GameSceneViewController) {
+        var newQuestions = scene.allQuestions.sorted(by: { $0.difficultyLevel < $1.difficultyLevel })
         while newQuestions.count > 15 {
             newQuestions.removeFirst()
         }
-        return newQuestions
+        scene.countdown = 40
+        scene.gameTime = 40
     }
     
     
 }
 
 final class HardStrategies: CreateDifficultyStratigies {
-    func setTimesToQuestion() -> Int {
-        return 30
-    }
-    
-    func setOrderOfQuestions(from questions: [QuestionsModel]) -> [QuestionsModel] {
-        let newQuestions = questions.shuffled()
-        var returnQuestions: [QuestionsModel] = []
-        for question in newQuestions {
+
+    func setGameSceneDifficultyProperty(fromGameScene scene: GameSceneViewController) {
+        scene.countdown = 30
+        scene.gameTime = 30
+        let questions = scene.allQuestions.shuffled()
+        var newQuestions: [QuestionsModel] = []
+        for question in questions {
             let answer = question.answers.shuffled()
             question.answers = answer
-            returnQuestions.append(question)
+            newQuestions.append(question)
         }
-        return returnQuestions
+        scene.allQuestions = newQuestions
     }
     
     
