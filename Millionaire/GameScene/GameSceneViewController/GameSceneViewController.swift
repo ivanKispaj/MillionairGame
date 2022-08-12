@@ -42,9 +42,23 @@ class GameSceneViewController: UIViewController {
     var currentQuestion: QuestionsModel?
     var allQuestions = GameService.shared.getAllQuestion()
     var questionPrice = [500,1000,2000,3000,5000,10000,15000,25000,50000,100000,200000,400000,800000,1500000,3000000]
+    var difficultyLevel: DifficultyLevel = .easy
+    var difficultyStrategies: CreateDifficultyStratigies {
+        switch difficultyLevel {
+        case .easy:
+            return EasyStrategies()
+        case .middle:
+            return MiddleStrategies()
+        case .hard:
+            return HardStrategies()
+        
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.responseTime = difficultyStrategies.setTimesToQuestion()
+        self.allQuestions = difficultyStrategies.setOrderOfQuestions(from: self.allQuestions)
         self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(oneSeconds), userInfo: nil, repeats: true)
         self.currentLevel = 0
         setupGameScene()
@@ -402,7 +416,7 @@ extension GameSceneViewController {
                     let action = UIAlertAction(title: "Ok", style: .default) { action in
                         self.timerActivitiIntdicator.startAnimating()
                         if self.currentLevel <= 14 {
-                            self.responseTime = 60
+                            self.responseTime = self.difficultyStrategies.setTimesToQuestion()
                             self.setlableAndButtontitle()
                         } else {
                             self.timerActivitiIntdicator.stopAnimating()
@@ -426,7 +440,7 @@ extension GameSceneViewController {
                 } else {
                     if self.currentLevel <= 14 {
                         setlableAndButtontitle()
-                        self.responseTime = 60
+                        self.responseTime = difficultyStrategies.setTimesToQuestion()
                     }
                 }
                 

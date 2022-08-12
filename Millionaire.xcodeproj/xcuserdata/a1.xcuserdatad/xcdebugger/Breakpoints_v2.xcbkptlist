@@ -7,22 +7,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "35117A23-79DD-484A-8A6E-1BE5B6CE9ED8"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Millionaire/GameScene/GameSceneViewController/GameSceneViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "404"
-            endingLineNumber = "404"
-            landmarkName = "tapAnswer(_:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "07F6F32A-2BB3-4228-96AA-52690294AC27"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -30,8 +14,8 @@
             filePath = "Millionaire/SettingsScene/SettinsSceneView/SettingsSceneViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "138"
-            endingLineNumber = "138"
+            startingLineNumber = "150"
+            endingLineNumber = "150"
             landmarkName = "selectedSwitch(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -39,16 +23,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "B1F54794-89DB-45E5-AC1D-971B7C14326A"
+            uuid = "E95EA1A7-AB1F-4CB6-B952-2E4748E900F2"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Millionaire/MainMenuScene/MainMenuViewController/MainMenuViewController.swift"
+            filePath = "Millionaire/SettingsScene/SettinsSceneView/SettingsSceneViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "199"
-            endingLineNumber = "199"
-            landmarkName = "setDifficulty(withLevel:)"
+            startingLineNumber = "144"
+            endingLineNumber = "144"
+            landmarkName = "selectedSwitch(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

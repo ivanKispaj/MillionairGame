@@ -18,7 +18,7 @@ protocol SettingsDifficultyDelegate: AnyObject {
 
 class MainMenuViewController: UIViewController {
    
-    var difficultyLevel: DifficultyLevel?
+    private var difficultyLevel: DifficultyLevel = .easy
     weak var containerDelegate: MainMenuDelegate?
     weak var scrollView: UIScrollView!
     weak var imageLogo: UIImageView!
@@ -42,6 +42,7 @@ class MainMenuViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
        
     }
+    //MARK: - Add all subview in to screen scene
     fileprivate func addAllSubview() {
         
         self.view.backgroundColor = UIColor(named: ColorScheme.background.rawValue)
@@ -152,18 +153,20 @@ class MainMenuViewController: UIViewController {
         
     }
 }
-
+//MARK: - selected menu
 extension MainMenuViewController {
-    
+
     @objc func startGame(_ sender: UITapGestureRecognizer? = nil) {
     // анимация нажатия кнопки
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        
         if let labelRecognaizer = sender?.view as? UILabel, let textLabel = labelRecognaizer.text {
             switch textLabel {
             case MenuTitle.start.rawValue:
                 let gameSession = GameSessoin()
                 Game.shared.gameSession = gameSession
                 guard let nextVC = storyboard.instantiateViewController(withIdentifier: "GameSceneViewController") as? GameSceneViewController else { return }
+                nextVC.difficultyLevel = self.difficultyLevel
                 self.animateTapAndRoute(to: nextVC, animate: self.startGameLabel)
             case MenuTitle.records.rawValue:
                 guard let nextVC = storyboard.instantiateViewController(withIdentifier: "RecordsViewController") as? RecordsSceneViewController else { return }
@@ -204,8 +207,7 @@ extension MainMenuViewController: SettingsDifficultyDelegate {
         case 2:
             self.difficultyLevel = DifficultyLevel.hard
         default:
-            self.difficultyLevel = nil
+            break
         }
-        print(self.difficultyLevel)
     }
 }

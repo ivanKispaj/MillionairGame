@@ -9,7 +9,7 @@ import Foundation
 
 final class QuestionsModel {
     let question: String
-    let answers: [String]
+    var answers: [String]
     let rightAnswer: String
     let difficultyLevel: Int
     let description: String?

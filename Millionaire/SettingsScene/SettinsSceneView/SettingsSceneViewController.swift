@@ -24,6 +24,8 @@ class SettingsSceneViewController: UIViewController {
     }
 }
 
+//MARK: - add subview to superview
+
 extension SettingsSceneViewController {
     
     fileprivate func setSettingsView() {
@@ -39,13 +41,23 @@ extension SettingsSceneViewController {
         backImage.layer.shadowRadius = 2
         backImage.backgroundColor = .blue.withAlphaComponent(0.1)
         
+        let labelTitleScreen = UILabel(frame: .zero)
+        labelTitleScreen.text = "Настройки"
+        labelTitleScreen.textColor = UIColor(named: ColorScheme.settingsTint.rawValue)
+        labelTitleScreen.font = UIFont.boldSystemFont(ofSize: 24)
+        self.view.addSubview(labelTitleScreen)
+        
+        labelTitleScreen.translatesAutoresizingMaskIntoConstraints = false
         backImage.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(backImage)
+        
         NSLayoutConstraint.activate([
+            labelTitleScreen.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 50),
             backImage.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 50),
-            backImage.leadingAnchor.constraint(greaterThanOrEqualTo: self.view.leadingAnchor, constant: 0),
+            labelTitleScreen.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 5),
+            self.view.bottomAnchor.constraint(greaterThanOrEqualTo: labelTitleScreen.bottomAnchor, constant: 0),
+            backImage.leadingAnchor.constraint(greaterThanOrEqualTo: labelTitleScreen.trailingAnchor, constant: 0),
             self.view.trailingAnchor.constraint(equalTo: backImage.trailingAnchor, constant: 110),
-           // self.view.bottomAnchor.constraint(greaterThanOrEqualTo: backImage.bottomAnchor, constant: 0),
             backImage.heightAnchor.constraint(equalToConstant: 35),
             backImage.widthAnchor.constraint(equalTo: backImage.heightAnchor, multiplier: 1 / 1)
         ])
@@ -69,9 +81,9 @@ extension SettingsSceneViewController {
         self.view.addSubview(switchEasy)
         switchEasy.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            labelEasy.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 5),
-            labelHard.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 5),
-            labelMiddle.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 5),
+            labelEasy.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
+            labelHard.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
+            labelMiddle.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
             labelEasy.centerYAnchor.constraint(equalTo: switchEasy.centerYAnchor),
             labelMiddle.centerYAnchor.constraint(equalTo: switchMiddle.centerYAnchor),
             labelHard.centerYAnchor.constraint(equalTo: switchHard.centerYAnchor),
@@ -101,7 +113,7 @@ extension SettingsSceneViewController {
     }
 
    
-    
+  //MARK: - function universal swith and lable added
     fileprivate func setDifficultyLevelSwitch(withTag tag: Int) -> UISwitch {
         let switchAction = UISwitch(frame: .zero)
         switchAction.addTarget(self, action: #selector(selectedSwitch), for: .valueChanged)
@@ -177,7 +189,6 @@ extension SettingsSceneViewController {
         }
         
         self.difficultyDelegate?.setDifficulty(withLevel: sender.tag)
-        print(sender.tag)
     }
 }
 
