@@ -7,12 +7,18 @@
 
 import UIKit
 
+
 protocol MainMenuDelegate: AnyObject {
     func togglMenu()
 }
 
+protocol SettingsDifficultyDelegate: AnyObject {
+    func setDifficulty(withLevel level: Int)
+}
+
 class MainMenuViewController: UIViewController {
-    
+   
+    private var difficultyLevel: DifficultyLevel = .easy
     weak var containerDelegate: MainMenuDelegate?
     weak var scrollView: UIScrollView!
     weak var imageLogo: UIImageView!
@@ -36,6 +42,7 @@ class MainMenuViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
        
     }
+    //MARK: - Add all subview in to screen scene
     fileprivate func addAllSubview() {
         
         self.view.backgroundColor = UIColor(named: ColorScheme.background.rawValue)
@@ -146,18 +153,20 @@ class MainMenuViewController: UIViewController {
         
     }
 }
-
+//MARK: - selected menu
 extension MainMenuViewController {
-    
+
     @objc func startGame(_ sender: UITapGestureRecognizer? = nil) {
     // анимация нажатия кнопки
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        
         if let labelRecognaizer = sender?.view as? UILabel, let textLabel = labelRecognaizer.text {
             switch textLabel {
             case MenuTitle.start.rawValue:
                 let gameSession = GameSessoin()
                 Game.shared.gameSession = gameSession
                 guard let nextVC = storyboard.instantiateViewController(withIdentifier: "GameSceneViewController") as? GameSceneViewController else { return }
+                nextVC.difficultyLevel = self.difficultyLevel
                 self.animateTapAndRoute(to: nextVC, animate: self.startGameLabel)
             case MenuTitle.records.rawValue:
                 guard let nextVC = storyboard.instantiateViewController(withIdentifier: "RecordsViewController") as? RecordsSceneViewController else { return }
@@ -181,6 +190,24 @@ extension MainMenuViewController {
                         nextVC.modalPresentationStyle = .fullScreen
                         animate.layer.opacity = 1
                         self.present(nextVC, animated: true)
+        }
+    }
+}
+
+
+extension MainMenuViewController: SettingsDifficultyDelegate {
+  
+    
+    func setDifficulty(withLevel level: Int) {
+        switch level {
+        case 0:
+            self.difficultyLevel = DifficultyLevel.easy
+        case 1:
+            self.difficultyLevel = DifficultyLevel.middle
+        case 2:
+            self.difficultyLevel = DifficultyLevel.hard
+        default:
+            break
         }
     }
 }

@@ -23,22 +23,18 @@ class ContainerMenuController: UIViewController {
         mainMenuViewController.containerDelegate = self
         view.addSubview(menuController.view)
         self.addChild(menuController)
-
-
-    }
-
-    fileprivate func createSettingsMenuScene() {
         if settingsViewController == nil {
+            
             let settingsController = SettingsSceneViewController()
             settingsController.containerDelegate = self
+            settingsController.difficultyDelegate = mainMenuViewController
             settingsViewController = settingsController
-            
             view.insertSubview(settingsViewController.view, at: 0)
             addChild(settingsViewController)
-            print("createSettingScene")
         }
+
     }
-    
+
     fileprivate func showSettingsController(shouldMove : Bool) {
         if shouldMove {
             UIView.animate(withDuration: 0.5,
@@ -68,7 +64,6 @@ class ContainerMenuController: UIViewController {
 extension ContainerMenuController: MainMenuDelegate {
     
     func togglMenu() {
-        createSettingsMenuScene()
         self.showSettingsController(shouldMove: self.toggle)
         self.toggle.toggle()
     }
