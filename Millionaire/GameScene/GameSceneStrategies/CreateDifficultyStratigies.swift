@@ -50,6 +50,7 @@ final class HardStrategies: CreateDifficultyStratigies {
             newQuestions.append(question)
         }
         scene.allQuestions = newQuestions
+        
     }
     
     

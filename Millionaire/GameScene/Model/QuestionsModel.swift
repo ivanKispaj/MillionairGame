@@ -8,12 +8,12 @@
 import Foundation
 
 final class QuestionsModel: Codable {
-    let question: String
+    var question: String
     var answers: [String]
-    let rightAnswer: String
-    let difficultyLevel: Int
-    let description: String?
-    init(question: String, answers: [String], rightAnswer: String, difficultyLevel: Int, description: String?) {
+    var rightAnswer: String
+    var difficultyLevel: Int
+    var description: String?
+    init(question: String, answers: [String], rightAnswer: String, difficultyLevel: Int, description: String? = nil) {
         self.question = question
         self.answers = answers
         self.rightAnswer = rightAnswer
