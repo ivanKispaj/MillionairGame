@@ -18,7 +18,7 @@ final class Game {
     var gameSession: GameSessoin?
     private(set) var records: [Records] = []
     private let recordCaretaker = RecordsCareTaker()
-
+    
     private init() {
         self.records = recordCaretaker.getSaveRecords()
     }
@@ -32,4 +32,6 @@ final class Game {
     func saveRecords() {
         self.recordCaretaker.saveRecords(records: self.records)
     }
+    
+    
 }

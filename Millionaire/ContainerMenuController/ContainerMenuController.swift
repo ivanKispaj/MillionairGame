@@ -4,7 +4,6 @@
 //
 //  Created by Ivan Konishchev on 09.08.2022.
 //
-
 import UIKit
 
 class ContainerMenuController: UIViewController {

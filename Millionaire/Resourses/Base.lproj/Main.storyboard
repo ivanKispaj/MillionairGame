@@ -23,6 +23,21 @@
             </objects>
             <point key="canvasLocation" x="18.840579710144929" y="83.705357142857139"/>
         </scene>
+        <!--Added New Question View-->
+        <scene sceneID="qW7-7x-dGQ">
+            <objects>
+                <viewController storyboardIdentifier="AddedNewQuestions" id="Ldc-Pb-xzD" customClass="AddedNewQuestionView" customModule="Millionaire" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="QHc-bo-6N1">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="OiB-fW-ZBk"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="aon-9E-TH3" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1128.985507246377" y="740.625"/>
+        </scene>
         <!--Game Scene View Controller-->
         <scene sceneID="uuU-zT-dfp">
             <objects>
@@ -36,7 +51,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="O39-3N-swZ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1129" y="-232"/>
+            <point key="canvasLocation" x="1128.985507246377" y="-562.5"/>
         </scene>
         <!--Records Scene View Controller-->
         <scene sceneID="cN8-Cm-YnB">
@@ -51,7 +66,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="z2N-n1-1S9" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1129" y="449"/>
+            <point key="canvasLocation" x="1129" y="84"/>
         </scene>
     </scenes>
     <resources>

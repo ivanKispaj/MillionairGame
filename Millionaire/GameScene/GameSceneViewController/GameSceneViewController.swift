@@ -13,6 +13,7 @@ protocol GameSceneDelegate: AnyObject {
 
 class GameSceneViewController: UIViewController, UIScrollViewDelegate {
     
+    
     weak var endGameDelegate: GameSceneDelegate?
     var questionHeighConstreint: NSLayoutConstraint!
     weak var scrollView: UIScrollView!
@@ -34,18 +35,11 @@ class GameSceneViewController: UIViewController, UIScrollViewDelegate {
     weak var responsePrice: UILabel!
     var gameTime: Int = 0
     var countdown = 0
-    var timer: Timer!
-    var currentLevel: Int = 0 {
-        didSet {
-            if allQuestions.count == self.currentLevel {
-                return 
-            }
-            self.currentQuestion = allQuestions[currentLevel]
-        }
-    }
+    var timer: Timer?
+    var currentLevel: Int = 0
     weak var questionNumber: UILabel!
     weak var currentQuestion: QuestionsModel?
-    var allQuestions = GameService.shared.getAllQuestion()
+    var allQuestions: [QuestionsModel] = []
     var questionPrice = [500,1000,2000,3000,5000,10000,15000,25000,50000,100000,200000,400000,800000,1500000,3000000]
     var difficultyLevel: DifficultyLevel = .easy
     
@@ -53,14 +47,19 @@ class GameSceneViewController: UIViewController, UIScrollViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        if let questions = QuestionsCareTaker().loadQuestions() {
+            self.allQuestions = questions
+        } 
         endGameDelegate = Game.shared.gameSession
-        self.difficultyFacade = DifficultyGameFacade(difficulty: self.difficultyLevel)
+
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.currentLevel = 0
+        self.difficultyFacade = DifficultyGameFacade(difficulty: self.difficultyLevel)
         difficultyFacade?.setLevelDifficulty(fromGameScene: self)
+        self.currentQuestion = allQuestions[currentLevel]
         setupGameScene()
         
     }
@@ -69,7 +68,7 @@ class GameSceneViewController: UIViewController, UIScrollViewDelegate {
         super.viewDidAppear(animated)
         self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(oneSeconds), userInfo: nil, repeats: true)
         self.timerActivitiIntdicator.startAnimating()
-        timer.fire()
+        timer?.fire()
         
         
     }
@@ -332,7 +331,7 @@ extension GameSceneViewController {
         NSLayoutConstraint.activate([
             self.scrollView.leadingAnchor.constraint(equalTo: topView.leadingAnchor),
             topView.trailingAnchor.constraint(equalTo: self.scrollView.trailingAnchor),
-            topView.topAnchor.constraint(equalTo: self.scrollView.topAnchor),
+            topView.topAnchor.constraint(equalTo: self.scrollView.topAnchor,constant: 20),
             topView.heightAnchor.constraint(equalToConstant: 50),
             totalCashImage.leadingAnchor.constraint(equalTo: topView.leadingAnchor, constant: 10),
             totalCashImage.centerYAnchor.constraint(equalTo: topView.centerYAnchor),
@@ -418,7 +417,7 @@ extension GameSceneViewController {
     //MARK: - Exit Home Screen
     
     @objc func exitHomeScreen() {
-        self.timer.invalidate()
+        self.timer?.invalidate()
         self.timer = nil
         Game.shared.gameSession = nil
         self.dismiss(animated: true)
@@ -431,7 +430,7 @@ extension GameSceneViewController {
         self.countdown = self.countdown - 1
    
         if self.countdown <= 0 {
-            self.timer.invalidate()
+            self.timer?.invalidate()
             self.timerActivitiIntdicator.stopAnimating()
             endGameDelegate?.didEndGame(withResult: gameSession.totalCash, rightAnswer: self.currentLevel + 1)
             self.dismiss(animated: true)
@@ -457,6 +456,7 @@ extension GameSceneViewController {
                         self.timerActivitiIntdicator.startAnimating()
                         if self.currentLevel <= 14 {
                             self.countdown = self.gameTime
+                            self.currentQuestion = self.allQuestions[self.currentLevel]
                             self.setlableAndButtontitle()
                         } else {
                             self.timerActivitiIntdicator.stopAnimating()
@@ -465,7 +465,7 @@ extension GameSceneViewController {
                             let alertEndGame = UIAlertController(title: "Поздравляем!", message: "Вы выиграли, и ответили на все вопросы! Попробуйте еще раз.", preferredStyle: .alert)
                             let actionOk = UIAlertAction(title: "Ok", style: .default) { _ in
                                 
-                                self.timer.invalidate()
+                                self.timer?.invalidate()
                                 self.timer = nil
                                 Game.shared.gameSession = nil
                                 self.dismiss(animated: true)

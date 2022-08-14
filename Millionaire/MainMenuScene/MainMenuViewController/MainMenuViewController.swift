@@ -25,6 +25,7 @@ class MainMenuViewController: UIViewController {
     weak var startGameLabel: UILabel!
     weak var recordsLabel: UILabel!
     weak var settingsLabel: UILabel!
+    weak var addedLabel: UILabel!
     let imageLogoTopMargine: CGFloat = 120
     // для изменения отступа сверху у логотипа при изменении ориентации экрана
     weak var imageLogoTopConstraint: NSLayoutConstraint!
@@ -32,16 +33,16 @@ class MainMenuViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.addAllSubview()
+        
     }
     
     // меняем отступ сверху для лого в зависимости от ориентации экрана
     override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         getNewTopAnchor()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-       
-    }
+   
     //MARK: - Add all subview in to screen scene
     fileprivate func addAllSubview() {
         
@@ -55,53 +56,81 @@ class MainMenuViewController: UIViewController {
         imageLogo.translatesAutoresizingMaskIntoConstraints = false
         imageLogo.image = UIImage(named: "MillionairLogo")
         
-        let startGameLable = UILabel(frame: .zero)
-        startGameLable.translatesAutoresizingMaskIntoConstraints = false
-        startGameLable.font = UIFont.boldSystemFont(ofSize: 20)
-        startGameLable.textColor = UIColor(named: ColorScheme.menuLabelColor.rawValue)
-        startGameLable.text = MenuTitle.start.rawValue
-        startGameLable.isUserInteractionEnabled = true
-        let startGameTap = UITapGestureRecognizer(target: self, action: #selector(startGame))
-        startGameLable.addGestureRecognizer(startGameTap)
-        startGameLable.textAlignment = .center
+        let startGameLabel = getLabel(withTitle: MenuTitle.start)
         
-        let recordsLable = UILabel(frame: .zero)
-        recordsLable.translatesAutoresizingMaskIntoConstraints = false
-        recordsLable.font = UIFont.boldSystemFont(ofSize: 20)
-        recordsLable.textColor = UIColor(named: ColorScheme.menuLabelColor.rawValue)
-        recordsLable.text = MenuTitle.records.rawValue
-        recordsLable.isUserInteractionEnabled = true
-        let recordsTap = UITapGestureRecognizer(target: self, action:  #selector(startGame))
-        recordsLable.addGestureRecognizer(recordsTap)
-        recordsLable.textAlignment = .center
+        let recordsLabel = getLabel(withTitle: MenuTitle.records)
         
-        let settingsLabel = UILabel(frame: .zero)
-        settingsLabel.translatesAutoresizingMaskIntoConstraints = false
-        settingsLabel.font = UIFont.boldSystemFont(ofSize: 20)
-        settingsLabel.textColor = UIColor(named: ColorScheme.menuLabelColor.rawValue)
-        settingsLabel.text = MenuTitle.settings.rawValue
-        settingsLabel.isUserInteractionEnabled = true
-        let settingsTap = UITapGestureRecognizer(target: self, action:  #selector(startGame))
-        settingsLabel.addGestureRecognizer(settingsTap)
-        settingsLabel.textAlignment = .center
+        let settingsLabel = getLabel(withTitle: MenuTitle.settings)
         
+        let addedLabel = getLabel(withTitle: MenuTitle.addedQuestion)
         // Добавляем subview
         scrollView.addSubview(imageLogo)
-        scrollView.addSubview(startGameLable)
-        scrollView.addSubview(recordsLable)
+        scrollView.addSubview(startGameLabel)
+        scrollView.addSubview(recordsLabel)
         scrollView.addSubview(settingsLabel)
+        scrollView.addSubview(addedLabel)
         self.view.addSubview(scrollView)
         
-        self.recordsLabel = recordsLable
-        self.startGameLabel = startGameLable
+        self.recordsLabel = recordsLabel
+        self.startGameLabel = startGameLabel
         self.settingsLabel = settingsLabel
         self.imageLogo = imageLogo
+        self.addedLabel = addedLabel
         self.scrollView = scrollView
         self.imageLogoTopConstraint = imageLogo.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: imageLogoTopMargine)
-        self.setConstraints()
+       // self.setConstraints()
         
+        NSLayoutConstraint.activate([
+            imageLogoTopConstraint,
+            imageLogo.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            imageLogo.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width),
+            imageLogo.widthAnchor.constraint(equalTo: imageLogo.heightAnchor, multiplier: 16 / 9)
+        ])
+        // констрейнты для лейбла старт игры
+        NSLayoutConstraint.activate([
+            startGameLabel.topAnchor.constraint(equalTo: imageLogo.bottomAnchor, constant: 50),
+            startGameLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor)
+        ])
+        // констрейнты для лейбла рекорды
+        NSLayoutConstraint.activate([
+            recordsLabel.topAnchor.constraint(equalTo: startGameLabel.bottomAnchor, constant: 20),
+            recordsLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+        ])
+        // констрейнты для лейбла настройки
+        NSLayoutConstraint.activate([
+            settingsLabel.topAnchor.constraint(equalTo: recordsLabel.bottomAnchor, constant: 20),
+            settingsLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+           // settingsLabel.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
+            
+        ])
+        // констрейнты для лейбла добавления вопроса
+        NSLayoutConstraint.activate([
+            addedLabel.topAnchor.constraint(equalTo: settingsLabel.bottomAnchor, constant: 20),
+            addedLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            addedLabel.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
+        ])
+        // констрейнты для скролвью
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: self.view.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+        ])
     }
     
+    func getLabel(withTitle title: MenuTitle) -> UILabel {
+        let label = UILabel(frame: .zero)
+        label.font = UIFont.boldSystemFont(ofSize: 20)
+        label.textColor = UIColor(named: ColorScheme.menuLabelColor.rawValue)
+        label.text = title.rawValue
+        label.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(selectedMenuLine))
+        label.addGestureRecognizer(tap)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+        
+    }
     // меняет верхний констрейнт для лого в зависимости от ориентации экрана
     fileprivate func getNewTopAnchor() {
         if UIDevice.current.orientation.isLandscape {
@@ -120,43 +149,14 @@ class MainMenuViewController: UIViewController {
     // Настраиваем констрейнты
     fileprivate func setConstraints() {
         // констрейнты для лого
-        NSLayoutConstraint.activate([
-            self.imageLogoTopConstraint,
-            self.imageLogo.centerXAnchor.constraint(equalTo: self.scrollView.centerXAnchor),
-            self.imageLogo.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width),
-            self.imageLogo.widthAnchor.constraint(equalTo: self.imageLogo.heightAnchor, multiplier: 16 / 9)
-        ])
-        // констрейнты для лейбла старт игры
-        NSLayoutConstraint.activate([
-            self.startGameLabel.topAnchor.constraint(equalTo: self.imageLogo.bottomAnchor, constant: 50),
-            self.startGameLabel.centerXAnchor.constraint(equalTo: self.scrollView.centerXAnchor)
-        ])
-        // констрейнты для лейбла рекорды
-        NSLayoutConstraint.activate([
-            self.recordsLabel.topAnchor.constraint(equalTo: self.startGameLabel.bottomAnchor, constant: 20),
-            self.recordsLabel.centerXAnchor.constraint(equalTo: self.scrollView.centerXAnchor),
-        ])
-        // констрейнты для лейбла настройки
-        NSLayoutConstraint.activate([
-            self.settingsLabel.topAnchor.constraint(equalTo: self.recordsLabel.bottomAnchor, constant: 20),
-            self.settingsLabel.centerXAnchor.constraint(equalTo: self.scrollView.centerXAnchor),
-            self.settingsLabel.bottomAnchor.constraint(equalTo: self.scrollView.bottomAnchor)
-            
-        ])
-        // констрейнты для скролвью
-        NSLayoutConstraint.activate([
-            self.scrollView.topAnchor.constraint(equalTo: self.view.topAnchor),
-            self.scrollView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            self.scrollView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-            self.scrollView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
-        ])
+      
         
     }
 }
 //MARK: - selected menu
 extension MainMenuViewController {
 
-    @objc func startGame(_ sender: UITapGestureRecognizer? = nil) {
+    @objc func selectedMenuLine(_ sender: UITapGestureRecognizer? = nil) {
     // анимация нажатия кнопки
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
@@ -173,7 +173,17 @@ extension MainMenuViewController {
                 self.animateTapAndRoute(to: nextVC, animate: self.recordsLabel)
                 
             case MenuTitle.settings.rawValue:
-                self.containerDelegate?.togglMenu()
+                UIView.animate(withDuration: 0.2,
+                               delay: 0 ) {
+                    self.settingsLabel.layer.opacity = 0.3
+                }completion: { result in
+                    self.settingsLabel.layer.opacity = 1
+                    self.containerDelegate?.togglMenu()
+
+                }
+            case MenuTitle.addedQuestion.rawValue:
+                guard let nextVC = storyboard.instantiateViewController(withIdentifier: "AddedNewQuestions") as? AddedNewQuestionView else { return }
+                self.animateTapAndRoute(to: nextVC, animate: self.addedLabel)
             default:
                 break
             }

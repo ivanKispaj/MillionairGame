@@ -16,4 +16,5 @@ enum ColorScheme: String {
     case settingsTint = "settingsColorTitle"
     case buttonAnswer = "buttonAnswerColor"
     case buttonAnswerBackground = "buttonAnswerBackground"
+    case backgroundNewQuestion = "backgroundNewQuestion"
 }

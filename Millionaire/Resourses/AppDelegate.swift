@@ -13,6 +13,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
    
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        if let _ = UserDefaults.standard.data(forKey: "questions") {
+            return true
+        } else {
+            QuestionsCareTaker().saveQuestions(questions: GameService.shared.getAllQuestion())
+        }
         // Override point for customization after application launch.
         return true
     }

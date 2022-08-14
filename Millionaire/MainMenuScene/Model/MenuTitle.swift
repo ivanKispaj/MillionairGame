@@ -11,4 +11,5 @@ enum MenuTitle: String {
     case start = "Играть"
     case records = "Рекорды"
     case settings = "Настройки"
+    case addedQuestion = "Добавить вопрос"
 }

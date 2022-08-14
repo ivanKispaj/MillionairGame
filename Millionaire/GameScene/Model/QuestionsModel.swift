@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class QuestionsModel {
+final class QuestionsModel: Codable {
     let question: String
     var answers: [String]
     let rightAnswer: String
