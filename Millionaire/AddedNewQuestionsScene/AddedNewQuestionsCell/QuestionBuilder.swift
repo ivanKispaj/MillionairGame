@@ -34,8 +34,10 @@ final class QuestionBuilder {
                 return false
             }
         }
-       
         allQuestions = allQuestions + allAddedQuestions
+
+        let question = QuestionsModel(question: question, answers: answers, rightAnswer: rightAnswer, difficultyLevel: difficultyLevel, description: description)
+        self.allAddedQuestions.append(question)
         
         
         return true

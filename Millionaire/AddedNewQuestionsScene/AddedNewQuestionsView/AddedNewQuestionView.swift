@@ -153,7 +153,6 @@ extension AddedNewQuestionView {
                 self.myTableView.reloadData()
             }
            
-            print(senderView.tag)
         default:
             break
         }
