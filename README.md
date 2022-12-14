@@ -1,4 +1,4 @@
-<h1 align="center"> The famous game "Who wants to become a millionaire"
+<h1 align="center"> The famous game "Who wants to become a millionaire
 </h1>
 <div align="center"><img src="https://github.com/ivanKispaj/MillionairGame/blob/4ee64d7d3b879565840099cdaec0d082ba3f0a63/Millionaire/Assets/Image/Image.xcassets/MillionairLogo.imageset/MillionairLogo.jpg"  width="200" height="120"/>
 </div>
